@@ -14,27 +14,28 @@ import org.jsfml.graphics.Text;
 import org.jsfml.graphics.Vertex;
 import org.jsfml.graphics.VertexArray;
 import org.jsfml.system.Vector2f;
+import static org.jsfml.window.Keyboard.Key.N;
 import org.jsfml.window.event.Event;
 
 /**
  *
  * @author christopher
  */
-public class MainScene extends AbstractScene {
+public class NextTestScene extends AbstractScene {
 
     private final VertexArray background = new VertexArray(PrimitiveType.QUADS);
     private final Font freeSansFont = new Font();
-    private final Text titleText = new Text("The Games Menu\nMain Scene", freeSansFont);
+    private final Text titleText = new Text("The Games Menu\nNext Scene", freeSansFont);
     private final Text titleTextShadow = new Text(titleText.getString(), freeSansFont);
     private final Text infoText = new Text(
             "Press N:\t\tNext Scene\n"
             + "Press Esc:\tQuit", freeSansFont);
 
     {
-        sceneName = "Main Scene";
+        sceneName = "Next Scene";
     }
 
-    public MainScene(AppInterface appInterface) throws Exception {
+    public NextTestScene(AppInterface appInterface) throws Exception {
         super(appInterface);
         initialize();
     }
@@ -43,11 +44,11 @@ public class MainScene extends AbstractScene {
         screenWidth = appInterface.getRenderTarget().getSize().x;
         screenHeight = appInterface.getRenderTarget().getSize().y;
 
-        background.add(new Vertex(new Vector2f(0, 0), Color.RED));
-        background.add(new Vertex(new Vector2f(screenWidth, 0), Color.BLUE));
-        background.add(new Vertex(new Vector2f(screenWidth, screenHeight), Color.GREEN));
-        background.add(new Vertex(new Vector2f(0, screenHeight), Color.YELLOW));
-
+        background.add(new Vertex(new Vector2f(0, 0), Color.YELLOW));
+        background.add(new Vertex(new Vector2f(screenWidth, 0), Color.GREEN));
+        background.add(new Vertex(new Vector2f(screenWidth, screenHeight), Color.BLUE));
+        background.add(new Vertex(new Vector2f(0, screenHeight), Color.RED));
+        
         freeSansFont.loadFromStream(this.getClass().getResourceAsStream("/resources/fonts/FreeSans.ttf"));
 
         titleText.setFont(freeSansFont);
@@ -75,7 +76,6 @@ public class MainScene extends AbstractScene {
         infoText.setColor(new Color(255, 255, 255, 192));
         infoText.setCharacterSize(12);
         infoText.setPosition(7, 50);
-
     }
 
     public void handleEvent(Event event) {
@@ -99,7 +99,7 @@ public class MainScene extends AbstractScene {
                         break;
                     }
                     case N: {
-                        nextScene = SceneEnum.NEXT;
+                        nextScene = SceneEnum.MAIN;
                         playing = false;
                         break;
                     }
@@ -115,13 +115,11 @@ public class MainScene extends AbstractScene {
 
     public void render() {
         appInterface.getRenderTarget().draw(background);
-
+        
         appInterface.getRenderTarget().draw(titleTextShadow);
         appInterface.getRenderTarget().draw(titleText);
 
         appInterface.getRenderTarget().draw(infoText);
-
-        
 
     }
 }

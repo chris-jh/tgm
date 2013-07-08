@@ -29,8 +29,31 @@
     </dependencies>
     
     <build>
+        <resources>
+            <!-- iSupervisor Config -->
+            <resource>
+                <targetPath>${basedir}/target/classes/resources</targetPath>
+                <directory>src/main/resources/</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>**/*.ttf</exclude>
+                </excludes>
+            </resource>
+            
+            <resource>
+                <targetPath>${basedir}/target/classes/resources</targetPath>
+                <directory>src/main/resources/</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*.ttf</include>
+                </includes>
+            </resource>
+           
+        </resources>
+            
         <pluginManagement>
             <plugins>
+                
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
@@ -43,12 +66,30 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/libs</outputDirectory>
+                            <excludeArtifactIds>iDatabase</excludeArtifactIds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
                         <manifest>
-                            <!--addClasspath>true</addClasspath>
-                            <classpathPrefix>libs/</classpathPrefix>-->
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>libs/</classpathPrefix>
 
                             <mainClass>com.tgm.App</mainClass>
                             <packageName>com.tgm</packageName>

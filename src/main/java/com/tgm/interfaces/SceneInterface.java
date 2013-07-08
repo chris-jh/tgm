@@ -4,6 +4,7 @@
  */
 package com.tgm.interfaces;
 
+import com.tgm.enums.SceneEnum;
 import org.jsfml.graphics.RenderTarget;
 import org.jsfml.window.event.Event;
 
@@ -12,7 +13,7 @@ import org.jsfml.window.event.Event;
  * @author christopher
  */
 public interface SceneInterface {
-    
+        
     /**
      * Get the Scene Name
      * 
@@ -21,11 +22,17 @@ public interface SceneInterface {
     public String getSceneName();
     
     /**
+     * Play the Scene
+     *  
+     */
+    public void play();
+    
+    /**
      * Get the next scene to play
      * 
      * @return SceneInterface 
      */
-    public SceneInterface getNextScene();
+    public SceneEnum getNextScene();
     
     /**
      * Check if the scene is playing
@@ -34,14 +41,6 @@ public interface SceneInterface {
      */
     public boolean isPlaying();
     
-    /**
-     * Initializes the scene by loading resources and creating initial entities.
-     *
-     * @param target The render target.
-     * @throws Exception In case an error occurs while initializing the scene.
-     */
-    public void initialize(RenderTarget target) throws Exception;
-
     /**
      * Handles a user event.
      *
@@ -61,14 +60,6 @@ public interface SceneInterface {
      *
      * @param target The render target.
      */
-    public void render(RenderTarget target);
-
-    /**
-     * Determines whether the scene is done and should be ended.
-     *
-     * @return <tt>true</tt> if the scene should be ended, <tt>false</tt> to continue.
-     */
-    public boolean isDone();
-
+    public void render();
     
 }

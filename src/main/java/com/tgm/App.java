@@ -1,7 +1,13 @@
 package com.tgm;
 
+import com.tgm.enums.SceneEnum;
+import com.tgm.interfaces.AppInterface;
 import com.tgm.interfaces.SceneInterface;
 import com.tgm.scene.MainScene;
+import com.tgm.scene.NextTestScene;
+import java.util.HashMap;
+import java.util.Map;
+import org.jsfml.graphics.RenderTarget;
 import org.jsfml.graphics.RenderWindow;
 import org.jsfml.graphics.Shader;
 import org.jsfml.graphics.Texture;
@@ -10,23 +16,21 @@ import org.jsfml.system.Clock;
 import org.jsfml.window.ContextSettings;
 import org.jsfml.window.VideoMode;
 import org.jsfml.window.Window;
-import org.jsfml.window.event.Event;
 
 /**
  * Hello world!
  *
  */
-public class App {
+public class App implements AppInterface {
 
     private final static int FPS = 60;
     private final static float FRAME_TIME = 1.0f / (float) FPS;
     private RenderWindow window;
-    private SceneInterface currentScene;
-    private MainScene mainScene;
-    private int width=800, height=600;
+    private int width = 800, height = 600;
     private boolean fullscreen = true;
     private String title = "TGM";
-    
+    private HashMap<SceneEnum, SceneInterface> scenes = new HashMap<SceneEnum, SceneInterface>();
+    private Clock frameClock = new Clock();
 
     public static void main(String[] args) {
         try {
@@ -38,6 +42,7 @@ public class App {
 
     public App() {
         init();
+        play();
     }
 
     private void init() {
@@ -72,55 +77,69 @@ public class App {
         window = new RenderWindow(new VideoMode(width, height), title, (fullscreen ? Window.FULLSCREEN : Window.DEFAULT), settings);
     }
 
+    /*
+     * Add and Initialise The Scenes
+     * 
+     */
     private void initScenes() {
-        mainScene = new MainScene();
+        try {
+            scenes.put(SceneEnum.MAIN, new MainScene(this));
+            scenes.put(SceneEnum.NEXT, new NextTestScene(this));
 
-        play(mainScene);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    private void play() {
+        playScene(SceneEnum.MAIN);
     }
 
     /**
-     * This will need total re-write as not right really. but ok for test.
-     * @param scene 
+     * Play The Scene.
+     *
+     * A bit better........
+     *
+     * @param scene
      */
-    public void play(SceneInterface scene) {
-        if (currentScene == null) {
-            currentScene = scene;
-            System.out.println("Playing Scene: " + currentScene.getSceneName());
+    private void playScene(SceneEnum sceneEnum) {
+        if (getPlayingScene() == null) {
+            SceneInterface scene = getScene(sceneEnum);
+            System.out.println("Playing Scene: " + scene.getSceneName());
 
-            //Attempt to initialize the scene
-            try {
-                scene.initialize(window);
-            } catch (Exception ex) {
-                //Scene initialization failed, exit
-                ex.printStackTrace();
-                return;
+            scene.play();
+
+            if (scene.getNextScene() != null) {
+                playScene(scene.getNextScene());
             }
-
-            //Create a clock for measuring frame time
-            Clock frameClock = new Clock();
-
-            //Enter main loop
-            while (!scene.isDone()) {
-                //Delegate events to the scene
-                for (Event event = window.pollEvent(); event != null; event = window.pollEvent()) {
-                    scene.handleEvent(event);
-                }
-
-                //Update the scene
-                scene.update(frameClock.restart().asSeconds());
-
-                //Clear the window
-                window.clear();
-
-                //Render the scene
-                scene.render(window);
-
-                //Display the scene
-                window.display();
-            }
-            
         } else {
-            System.out.println("Scene [" + currentScene.getSceneName() + "] is already playing....");
+            System.out.println("Scene [" + getPlayingScene().getSceneName() + "] is already playing....");
         }
+    }
+
+    private SceneInterface getScene(SceneEnum sceneEnum) {
+        return scenes.get(sceneEnum);
+    }
+
+    private SceneInterface getPlayingScene() {
+        for (Map.Entry<SceneEnum, SceneInterface> entry : scenes.entrySet()) {
+            if (entry.getValue().isPlaying()) {
+                return entry.getValue();
+            }
+        }
+        return null;
+    }
+
+    public Clock getClock() {
+        return frameClock;
+    }
+
+    public RenderTarget getRenderTarget() {
+        return window;
+    }
+
+    public RenderWindow getRenderWindow() {
+        return window;
     }
 }
