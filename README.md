@@ -1,4 +1,4 @@
 tgm
 ===
 
-Just a game menu.
+Just a game menu in java.
