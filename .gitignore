@@ -5,3 +5,5 @@
 *.war
 *.ear
 /target/
+!/src/main/resources/libs/jsfml.jar
+!/repo/org/jsfml/jsfml/2.0.290113/jsfml-2.0.290113.jar
