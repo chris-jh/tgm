@@ -27,7 +27,7 @@ public class App implements AppInterface {
     private final static float FRAME_TIME = 1.0f / (float) FPS;
     private RenderWindow window;
     private int width = 800, height = 600;
-    private boolean fullscreen = true;
+    private boolean fullscreen = false;
     private String title = "TGM";
     private HashMap<SceneEnum, SceneInterface> scenes = new HashMap<SceneEnum, SceneInterface>();
     private Clock frameClock = new Clock();
@@ -71,7 +71,7 @@ public class App implements AppInterface {
     private void initScreen() {
         System.out.println("Init Screen...");
         //Set OpenGL 3.0 to be the desired version
-        ContextSettings settings = new ContextSettings(3, 0);
+        ContextSettings settings = new ContextSettings(2, 0);
 
         //Create a render window
         window = new RenderWindow(new VideoMode(width, height), title, (fullscreen ? Window.FULLSCREEN : Window.DEFAULT), settings);
