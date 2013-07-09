@@ -7,3 +7,5 @@
 /target/
 !/src/main/resources/libs/jsfml.jar
 !/repo/org/jsfml/jsfml/2.0.290113/jsfml-2.0.290113.jar
+!/repo/org/jsfml/jsfml/2.0.290113-2/jsfml-2.0.290113-2.jar
+!/repo/org/jsfml/jsfml/2.0.290113-3/jsfml-2.0.290113-3.jar
