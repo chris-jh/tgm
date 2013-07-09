@@ -7,6 +7,8 @@ import com.tgm.scene.MainScene;
 import com.tgm.scene.NextTestScene;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import org.apache.log4j.Logger;
 import org.jsfml.graphics.RenderTarget;
 import org.jsfml.graphics.RenderWindow;
 import org.jsfml.graphics.Shader;
@@ -16,12 +18,15 @@ import org.jsfml.system.Clock;
 import org.jsfml.window.ContextSettings;
 import org.jsfml.window.VideoMode;
 import org.jsfml.window.Window;
+import org.jsfml.window.event.Event;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.task.TaskExecutor;
 
 /**
  * Hello world!
  *
  */
-public class App implements AppInterface {
+public class App implements AppInterface, InitializingBean, Runnable {
 
     private final static int FPS = 60;
     private final static float FRAME_TIME = 1.0f / (float) FPS;
@@ -31,16 +36,14 @@ public class App implements AppInterface {
     private String title = "TGM";
     private HashMap<SceneEnum, SceneInterface> scenes = new HashMap<SceneEnum, SceneInterface>();
     private Clock frameClock = new Clock();
-
-    public static void main(String[] args) {
-        try {
-            App a = new App();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    private TaskExecutor taskExecutor;
+    private boolean running = true;
+    private ConcurrentLinkedQueue<SceneEnum> sceneQueue = new ConcurrentLinkedQueue<SceneEnum>();
 
     public App() {
+    }
+
+    public void afterPropertiesSet() throws Exception {
         init();
         play();
     }
@@ -56,20 +59,21 @@ public class App implements AppInterface {
         SFMLNative.loadNativeLibraries();
 
         //If we made it here, things are looking good!
-        System.out.println("SFMLNative.loadNativeLibraries() succeeded.");
-        System.out.println();
+        Logger.getLogger(this.getClass()).info("SFMLNative.loadNativeLibraries() succeeded.");
+        Logger.getLogger(this.getClass()).info("");
 
         //Some SFML facts
         {
-            System.out.println("Detecting basic SFML facts ...");
-            System.out.println("Texture.getMaximumSize(): " + Texture.getMaximumSize());
-            System.out.println("Shader.isAvailable(): " + Shader.isAvailable());
-            System.out.println();
+
+            Logger.getLogger(this.getClass()).info("Detecting basic SFML facts ...");
+            Logger.getLogger(this.getClass()).info("Texture.getMaximumSize(): " + Texture.getMaximumSize());
+            Logger.getLogger(this.getClass()).info("Shader.isAvailable(): " + Shader.isAvailable());
+            Logger.getLogger(this.getClass()).info("");
         }
     }
 
     private void initScreen() {
-        System.out.println("Init Screen...");
+        Logger.getLogger(this.getClass()).info("Init Screen...");
         //Set OpenGL 3.0 to be the desired version
         ContextSettings settings = new ContextSettings(2, 0);
 
@@ -83,38 +87,32 @@ public class App implements AppInterface {
      */
     private void initScenes() {
         try {
-            scenes.put(SceneEnum.MAIN, new MainScene(this));
-            scenes.put(SceneEnum.NEXT, new NextTestScene(this));
-
+            for (Map.Entry<SceneEnum, SceneInterface> entry : scenes.entrySet()) {
+                entry.getValue().initialize(this);
+            }
         } catch (Exception e) {
-            e.printStackTrace();
-            return;
+            Logger.getLogger(this.getClass()).fatal("Error Initialsing Screens", e);
+            System.exit(0);
         }
     }
 
     private void play() {
-        playScene(SceneEnum.MAIN);
+        this.taskExecutor.execute(this);
+        processNextScene(SceneEnum.MAIN);
+        processScene();
     }
 
     /**
      * Play The Scene.
-     *
-     * A bit better........
-     *
      * @param scene
      */
     private void playScene(SceneEnum sceneEnum) {
         if (getPlayingScene() == null) {
             SceneInterface scene = getScene(sceneEnum);
-            System.out.println("Playing Scene: " + scene.getSceneName());
-
+            Logger.getLogger(this.getClass()).info("Playing Scene: " + scene.getSceneName());
             scene.play();
-
-            if (scene.getNextScene() != null) {
-                playScene(scene.getNextScene());
-            }
         } else {
-            System.out.println("Scene [" + getPlayingScene().getSceneName() + "] is already playing....");
+            Logger.getLogger(this.getClass()).info("Scene [" + getPlayingScene().getSceneName() + "] is already playing....");
         }
     }
 
@@ -141,5 +139,73 @@ public class App implements AppInterface {
 
     public RenderWindow getRenderWindow() {
         return window;
+    }
+
+    public void processNextScene(SceneEnum scene) {
+        sceneQueue.clear();
+        sceneQueue.add(scene);
+    }
+
+    private void processScene() {
+        while (running) {
+            SceneInterface scene = getPlayingScene();
+
+            for (Event event = getRenderWindow().pollEvent(); event != null; event = getRenderWindow().pollEvent()) {
+                if (scene != null) {
+                    scene.handleEvent(event);
+                }
+            }
+
+            if (scene != null) {
+                //Update the scene
+                scene.update(getClock().restart().asSeconds());
+
+                //Clear the window
+                getRenderWindow().clear();
+
+                //Render the scene
+                scene.render();
+
+                //Display the scene
+                getRenderWindow().display();
+            } else {
+                try {
+                    Thread.sleep(100);
+                } catch (Exception e) {
+                }
+            }
+        }
+    }
+
+    public void run() {
+        while (running) {
+            SceneEnum nextScene = sceneQueue.poll();
+            if (nextScene != null) {
+                playScene(nextScene);
+            }
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    public void quit() {
+        running = false;
+        System.exit(0);
+    }
+
+    /**
+     * @param taskExecutor the taskExecutor to set
+     */
+    public void setTaskExecutor(TaskExecutor taskExecutor) {
+        this.taskExecutor = taskExecutor;
+    }
+
+    /**
+     * @param scenes the scenes to set
+     */
+    public void setScenes(HashMap<SceneEnum, SceneInterface> scenes) {
+        this.scenes = scenes;
     }
 }

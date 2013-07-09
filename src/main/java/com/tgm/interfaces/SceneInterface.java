@@ -13,36 +13,31 @@ import org.jsfml.window.event.Event;
  * @author christopher
  */
 public interface SceneInterface {
-        
+
     /**
      * Get the Scene Name
-     * 
-     * @return SceneName 
+     *
+     * @return SceneName
      */
     public String getSceneName();
-    
+
+    public void initialize(AppInterface appInterface) throws Exception;
+
     public void reset();
-    
+
     /**
      * Play the Scene
-     *  
+     *
      */
     public void play();
-    
-    /**
-     * Get the next scene to play
-     * 
-     * @return SceneInterface 
-     */
-    public SceneEnum getNextScene();
-    
+
     /**
      * Check if the scene is playing
-     * 
+     *
      * @return True/False
      */
     public boolean isPlaying();
-    
+
     /**
      * Handles a user event.
      *
@@ -63,5 +58,5 @@ public interface SceneInterface {
      * @param target The render target.
      */
     public void render();
-    
+
 }
