@@ -35,12 +35,8 @@ public class NextTestScene extends AbstractScene {
         sceneName = "Next Scene";
     }
 
-    public NextTestScene(AppInterface appInterface) throws Exception {
-        super(appInterface);
-        initialize();
-    }
-
-    private void initialize() throws Exception {
+    public void initialize(AppInterface appInterface) throws Exception {
+        this.appInterface = appInterface;
         screenWidth = appInterface.getRenderTarget().getSize().x;
         screenHeight = appInterface.getRenderTarget().getSize().y;
 
@@ -48,7 +44,7 @@ public class NextTestScene extends AbstractScene {
         background.add(new Vertex(new Vector2f(screenWidth, 0), Color.GREEN));
         background.add(new Vertex(new Vector2f(screenWidth, screenHeight), Color.BLUE));
         background.add(new Vertex(new Vector2f(0, screenHeight), Color.RED));
-        
+
         freeSansFont.loadFromStream(this.getClass().getResourceAsStream("/resources/fonts/FreeSans.ttf"));
 
         titleText.setFont(freeSansFont);
@@ -79,9 +75,8 @@ public class NextTestScene extends AbstractScene {
     }
 
     public void reset() {
-        
     }
-    
+
     public void handleEvent(Event event) {
         switch (event.type) {
             case CLOSED: {
@@ -103,8 +98,7 @@ public class NextTestScene extends AbstractScene {
                         break;
                     }
                     case N: {
-                        nextScene = SceneEnum.MAIN;
-                        playing = false;
+                        playNextScene(SceneEnum.MAIN);
                         break;
                     }
                 }
@@ -119,7 +113,7 @@ public class NextTestScene extends AbstractScene {
 
     public void render() {
         appInterface.getRenderTarget().draw(background);
-        
+
         appInterface.getRenderTarget().draw(titleTextShadow);
         appInterface.getRenderTarget().draw(titleText);
 

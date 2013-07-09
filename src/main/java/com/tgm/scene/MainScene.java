@@ -20,7 +20,7 @@ import org.jsfml.window.event.Event;
  *
  * @author christopher
  */
-public class MainScene extends AbstractScene {
+public class MainScene extends AbstractScene  {
 
     private final VertexArray background = new VertexArray(PrimitiveType.QUADS);
     private final Font freeSansFont = new Font();
@@ -35,13 +35,9 @@ public class MainScene extends AbstractScene {
     {
         sceneName = "Main Scene";
     }
-
-    public MainScene(AppInterface appInterface) throws Exception {
-        super(appInterface);
-        initialize();
-    }
-
-    private void initialize() throws Exception {
+   
+    public void initialize(AppInterface appInterface) throws Exception {
+        this.appInterface = appInterface;
         screenWidth = appInterface.getRenderTarget().getSize().x;
         screenHeight = appInterface.getRenderTarget().getSize().y;
 
@@ -106,8 +102,7 @@ public class MainScene extends AbstractScene {
                         break;
                     }
                     case N: {
-                        nextScene = SceneEnum.NEXT;
-                        playing = false;
+                        playNextScene(SceneEnum.NEXT);
                         break;
                     }
                 }
