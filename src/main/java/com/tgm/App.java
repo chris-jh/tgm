@@ -3,8 +3,6 @@ package com.tgm;
 import com.tgm.enums.SceneEnum;
 import com.tgm.interfaces.AppInterface;
 import com.tgm.interfaces.SceneInterface;
-import com.tgm.scene.MainScene;
-import com.tgm.scene.NextTestScene;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;

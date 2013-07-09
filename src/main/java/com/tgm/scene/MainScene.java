@@ -6,11 +6,15 @@ package com.tgm.scene;
 
 import com.tgm.enums.SceneEnum;
 import com.tgm.interfaces.AppInterface;
+import org.apache.log4j.Logger;
 import org.jsfml.graphics.Color;
 import org.jsfml.graphics.FloatRect;
 import org.jsfml.graphics.Font;
 import org.jsfml.graphics.PrimitiveType;
+import org.jsfml.graphics.RenderStates;
+import org.jsfml.graphics.Sprite;
 import org.jsfml.graphics.Text;
+import org.jsfml.graphics.Texture;
 import org.jsfml.graphics.Vertex;
 import org.jsfml.graphics.VertexArray;
 import org.jsfml.system.Vector2f;
@@ -20,22 +24,25 @@ import org.jsfml.window.event.Event;
  *
  * @author christopher
  */
-public class MainScene extends AbstractScene  {
+public class MainScene extends AbstractScene {
 
     private final VertexArray background = new VertexArray(PrimitiveType.QUADS);
+    private final Texture backgroundTexture = new Texture();
+    private final Sprite backgroundSprite = new Sprite();
+    private RenderStates backgroundStates = RenderStates.DEFAULT;
     private final Font freeSansFont = new Font();
-    private final Text titleText = new Text("The Games Menu\nMain Scene", freeSansFont);
+    private final Text titleText = new Text("The Games Menu\n     Main Scene", freeSansFont);
     private final Text titleTextShadow = new Text(titleText.getString(), freeSansFont);
     private final Text infoText = new Text(
             "Press N:\t\tNext Scene\n"
             + "Press Esc:\tQuit", freeSansFont);
-    private float textSpinSpeed = 0.005f;
+    private float textSpinSpeed = 0.002f;
     private float textScaleValue = 0.0f;
 
     {
         sceneName = "Main Scene";
     }
-   
+
     public void initialize(AppInterface appInterface) throws Exception {
         this.appInterface = appInterface;
         screenWidth = appInterface.getRenderTarget().getSize().x;
@@ -45,6 +52,14 @@ public class MainScene extends AbstractScene  {
         background.add(new Vertex(new Vector2f(screenWidth, 0), Color.BLUE));
         background.add(new Vertex(new Vector2f(screenWidth, screenHeight), Color.GREEN));
         background.add(new Vertex(new Vector2f(0, screenHeight), Color.YELLOW));
+
+        backgroundTexture.loadFromStream(getClass().getResourceAsStream("/resources/images/background.png"));
+        backgroundTexture.setSmooth(true);
+
+        //Setup logo sprite
+        backgroundSprite.setTexture(backgroundTexture);
+        backgroundSprite.setPosition(0, 0);
+        backgroundSprite.setScale((float) screenWidth / backgroundTexture.getSize().x, (float) screenHeight / backgroundTexture.getSize().y);
 
         freeSansFont.loadFromStream(this.getClass().getResourceAsStream("/resources/fonts/FreeSans.ttf"));
 
@@ -58,7 +73,7 @@ public class MainScene extends AbstractScene  {
 
         titleText.setOrigin(titleTextBounds.width / 2, titleTextBounds.height / 2);
 
-        titleText.setPosition(screenWidth / 2 - 10, 18);
+        titleText.setPosition((float) screenWidth / 8, 18);
 
         titleTextShadow.setFont(freeSansFont);
         titleTextShadow.setStyle(Text.BOLD);
@@ -67,7 +82,7 @@ public class MainScene extends AbstractScene  {
 
         FloatRect titleTextShadowBounds = titleText.getLocalBounds();
         titleTextShadow.setOrigin(titleTextShadowBounds.width / 2, titleTextShadowBounds.height / 2);
-        titleTextShadow.setPosition(screenWidth / 2 - 8, 20);
+        titleTextShadow.setPosition(((float) screenWidth / 8) + 2, 20);
 
         infoText.setFont(freeSansFont);
         infoText.setStyle(Text.BOLD);
@@ -79,6 +94,9 @@ public class MainScene extends AbstractScene  {
 
     public void reset() {
         textScaleValue = 1.0f;
+        dir = 0;
+        pause = false;
+        pauseTime = 0;
     }
 
     public void handleEvent(Event event) {
@@ -112,20 +130,32 @@ public class MainScene extends AbstractScene  {
         }
     }
     int dir = 0;
+    boolean pause = false;
+    long pauseTime = 0;
 
     public void update(float dt) {
 
-        if (dir == 0) {
-            textScaleValue += textSpinSpeed;
-            if (textScaleValue > 1.0) {
-                dir = 1;
+        if (pause) {
+            if (System.currentTimeMillis() > pauseTime) {
+                pause = false;
             }
-        } else if (dir == 1) {
-            textScaleValue -= textSpinSpeed;
-            if (textScaleValue < -1.0) {
-                dir = 0;
+        } else {
+            if (dir == 0) {
+                textScaleValue += textSpinSpeed;
+                if (textScaleValue > 1.0) {
+                    dir = 1;
+                    pause = true;
+                    pauseTime = System.currentTimeMillis() + 1000;
+                }
+            } else if (dir == 1) {
+                textScaleValue -= textSpinSpeed;
+                if (textScaleValue < -1.0) {
+                    dir = 0;
+                }
             }
         }
+
+
 
         titleText.setScale(textScaleValue, titleText.getScale().y);
         titleTextShadow.setScale(textScaleValue, titleText.getScale().y);
@@ -135,6 +165,8 @@ public class MainScene extends AbstractScene  {
 
     public void render() {
         appInterface.getRenderTarget().draw(background);
+
+        appInterface.getRenderTarget().draw(backgroundSprite, backgroundStates);
 
         appInterface.getRenderTarget().draw(titleTextShadow);
         appInterface.getRenderTarget().draw(titleText);

@@ -49,6 +49,16 @@
         </entry>
     </util:map>
     
-    <bean class="com.tgm.App" p:taskExecutor-ref="mainExecutor" p:scenes-ref="scenes"/>
-            
+    <bean class="com.tgm.App" p:taskExecutor-ref="mainExecutor" p:scenes-ref="scenes" depends-on="emuScanner"/>
+
+    
+    <bean class="com.tgm.emu.EmuConfig" p:name="Sega MegaDrive" p:emuPath="/some/path/here" p:romPath="/some/rom/path"/>
+    <bean class="com.tgm.emu.EmuConfig" p:name="Nintendo Snes" p:emuPath="/some/path/here" p:romPath="/some/rom/path"/>
+
+    <bean id="emuScanner" class="com.tgm.emu.EmuScanner"/>
+    
+
+    
+    
+    
 </beans>
