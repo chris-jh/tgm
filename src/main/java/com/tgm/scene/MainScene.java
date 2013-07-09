@@ -29,6 +29,8 @@ public class MainScene extends AbstractScene {
     private final Text infoText = new Text(
             "Press N:\t\tNext Scene\n"
             + "Press Esc:\tQuit", freeSansFont);
+    private float textSpinSpeed = 0.005f;
+    private float textScaleValue = 0.0f;
 
     {
         sceneName = "Main Scene";
@@ -54,6 +56,7 @@ public class MainScene extends AbstractScene {
         titleText.setStyle(Text.BOLD);
         titleText.setColor(new Color(255, 255, 255, 192));
         titleText.setCharacterSize(16);
+        textScaleValue = 1.0f;
 
         FloatRect titleTextBounds = titleText.getLocalBounds();
 
@@ -76,6 +79,10 @@ public class MainScene extends AbstractScene {
         infoText.setCharacterSize(12);
         infoText.setPosition(7, 50);
 
+    }
+
+    public void reset() {
+        textScaleValue = 1.0f;
     }
 
     public void handleEvent(Event event) {
@@ -109,8 +116,26 @@ public class MainScene extends AbstractScene {
 
         }
     }
+    int dir = 0;
 
     public void update(float dt) {
+
+        if (dir == 0) {
+            textScaleValue += textSpinSpeed;
+            if (textScaleValue > 1.0) {
+                dir = 1;
+            }
+        } else if (dir == 1) {
+            textScaleValue -= textSpinSpeed;
+            if (textScaleValue < -1.0) {
+                dir = 0;
+            }
+        }
+
+        titleText.setScale(textScaleValue, titleText.getScale().y);
+        titleTextShadow.setScale(textScaleValue, titleText.getScale().y);
+
+
     }
 
     public void render() {
@@ -121,7 +146,7 @@ public class MainScene extends AbstractScene {
 
         appInterface.getRenderTarget().draw(infoText);
 
-        
+
 
     }
 }

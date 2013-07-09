@@ -34,6 +34,7 @@ public abstract class AbstractScene implements SceneInterface {
     }
 
     public synchronized void play() {
+        reset();
         playing = true;
         //Main Loop for Scene
         while (isPlaying()) {

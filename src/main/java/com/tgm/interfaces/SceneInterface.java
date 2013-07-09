@@ -21,6 +21,8 @@ public interface SceneInterface {
      */
     public String getSceneName();
     
+    public void reset();
+    
     /**
      * Play the Scene
      *  

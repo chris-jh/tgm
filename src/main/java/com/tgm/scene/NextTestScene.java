@@ -78,6 +78,10 @@ public class NextTestScene extends AbstractScene {
         infoText.setPosition(7, 50);
     }
 
+    public void reset() {
+        
+    }
+    
     public void handleEvent(Event event) {
         switch (event.type) {
             case CLOSED: {
