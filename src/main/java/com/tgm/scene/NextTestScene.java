@@ -45,7 +45,7 @@ public class NextTestScene extends AbstractScene {
         background.add(new Vertex(new Vector2f(screenWidth, screenHeight), Color.BLUE));
         background.add(new Vertex(new Vector2f(0, screenHeight), Color.RED));
 
-        freeSansFont.loadFromStream(this.getClass().getResourceAsStream("/resources/fonts/FreeSans.ttf"));
+        freeSansFont.loadFromFile(readMedia("fonts/FreeSans.ttf"));
 
         titleText.setFont(freeSansFont);
         titleText.setStyle(Text.BOLD);

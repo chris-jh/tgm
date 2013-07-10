@@ -18,6 +18,7 @@ import org.jsfml.window.VideoMode;
 import org.jsfml.window.Window;
 import org.jsfml.window.event.Event;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 
 /**
@@ -29,8 +30,12 @@ public class App implements AppInterface, InitializingBean, Runnable {
     private final static int FPS = 60;
     private final static float FRAME_TIME = 1.0f / (float) FPS;
     private RenderWindow window;
-    private int width = 800, height = 600;
-    private boolean fullscreen = false;
+    @Value(value = "${tgm.width:800}")
+    private int width;
+    @Value(value = "${tgm.height:600}")
+    private int height;    
+    @Value(value = "${tgm.fullscreen:false}")
+    private boolean fullscreen;
     private String title = "TGM";
     private HashMap<SceneEnum, SceneInterface> scenes = new HashMap<SceneEnum, SceneInterface>();
     private Clock frameClock = new Clock();
@@ -42,6 +47,7 @@ public class App implements AppInterface, InitializingBean, Runnable {
     }
 
     public void afterPropertiesSet() throws Exception {
+        Logger.getLogger(this.getClass()).info("SCREEN: "+width+","+height+" FULLSCREEN: "+fullscreen);
         init();
         play();
     }
@@ -205,5 +211,26 @@ public class App implements AppInterface, InitializingBean, Runnable {
      */
     public void setScenes(HashMap<SceneEnum, SceneInterface> scenes) {
         this.scenes = scenes;
+    }
+
+    /**
+     * @param width the width to set
+     */
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    /**
+     * @param height the height to set
+     */
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    /**
+     * @param fullscreen the fullscreen to set
+     */
+    public void setFullscreen(boolean fullscreen) {
+        this.fullscreen = fullscreen;
     }
 }

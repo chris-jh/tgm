@@ -17,12 +17,20 @@
 
     <context:annotation-config />
     
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" >
+        <property name="locations">
+            <list>
+                <value>file:./properties/tgm.properties</value>
+            </list>
+        </property>
+    </bean>
+    
     <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="targetClass" value="org.springframework.util.Log4jConfigurer"/>
         <property name="targetMethod" value="initLogging"/>
         <property name="arguments">
             <list>
-                <value>classpath:resources/properties/log4j.properties</value>
+                <value>classpath:META-INF/log4j.properties</value>
             </list>
         </property>
     </bean>
@@ -51,18 +59,9 @@
     
     <bean class="com.tgm.App" p:taskExecutor-ref="mainExecutor" p:scenes-ref="scenes" depends-on="emuScanner"/>
 
+    <import resource="file:./configs/application-config.xml"/>
     
-    <bean class="com.tgm.emu.EmuConfig" p:name="Sega MegaDrive" p:emuPath="/some/path/here">
-        <property name="romPath">
-            <list>
-                <value>/some/rom/path1</value>
-                <value>/some/rom/path2</value>
-                <value>/some/rom/path3</value>
-            </list>
-        </property>
-    </bean>
-    <bean class="com.tgm.emu.EmuConfig" p:name="Nintendo Snes" p:emuPath="/some/path/here" p:romPath="/some/rom/path"/>
-
+   
     <bean id="emuScanner" class="com.tgm.emu.EmuScanner"/>
     
 

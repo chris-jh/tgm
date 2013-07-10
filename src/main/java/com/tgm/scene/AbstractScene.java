@@ -7,8 +7,10 @@ package com.tgm.scene;
 import com.tgm.enums.SceneEnum;
 import com.tgm.interfaces.AppInterface;
 import com.tgm.interfaces.SceneInterface;
-import org.jsfml.window.event.Event;
-import org.springframework.beans.factory.InitializingBean;
+import com.tgm.resources.TgmResource;
+import java.io.File;
+import java.nio.file.Path;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -36,14 +38,19 @@ public abstract class AbstractScene implements SceneInterface {
         }
     }
 
-    protected void playNextScene(SceneEnum scene){
+    protected void playNextScene(SceneEnum scene) {
         playing = false;
         appInterface.processNextScene(scene);
     }
-    
+
     protected void quit() {
         playing = false;
         appInterface.quit();
     }
 
+    protected Path readMedia(String media) {
+        File f = new File(TgmResource.MEDIA + "/" + media);
+        Logger.getLogger(this.getClass()).info("LOAD RESOURCE: [" + TgmResource.MEDIA + "/" + media + "] = " + f.getAbsolutePath());
+        return f.toPath();
+    }
 }

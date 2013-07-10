@@ -14,7 +14,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class Boot {
 
     public static void main(String[] args) {
-        String config = "classpath:/resources/configs/application-context.xml";
+        String config = "classpath:/META-INF/application-context.xml";
         
         if ((args != null) && (args.length == 1)) {
             if (StringUtils.contains(args[0], "file:")) {

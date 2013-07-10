@@ -53,7 +53,7 @@ public class MainScene extends AbstractScene {
         background.add(new Vertex(new Vector2f(screenWidth, screenHeight), Color.GREEN));
         background.add(new Vertex(new Vector2f(0, screenHeight), Color.YELLOW));
 
-        backgroundTexture.loadFromStream(getClass().getResourceAsStream("/resources/images/background.png"));
+        backgroundTexture.loadFromFile(readMedia("images/background.png"));
         backgroundTexture.setSmooth(true);
 
         //Setup logo sprite
@@ -61,7 +61,7 @@ public class MainScene extends AbstractScene {
         backgroundSprite.setPosition(0, 0);
         backgroundSprite.setScale((float) screenWidth / backgroundTexture.getSize().x, (float) screenHeight / backgroundTexture.getSize().y);
 
-        freeSansFont.loadFromStream(this.getClass().getResourceAsStream("/resources/fonts/FreeSans.ttf"));
+        freeSansFont.loadFromFile(readMedia("fonts/FreeSans.ttf"));
 
         titleText.setFont(freeSansFont);
         titleText.setStyle(Text.BOLD);

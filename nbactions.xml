@@ -1,37 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <actions>
-        <action>
-            <actionName>run</actionName>
-            <goals>
-                <goal>process-classes</goal>
-                <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
-            </goals>
-            <properties>
-                <exec.args>-classpath %classpath com.tgm.Boot</exec.args>
-                <exec.executable>java</exec.executable>
-            </properties>
-        </action>
-        <action>
-            <actionName>debug</actionName>
-            <goals>
-                <goal>process-classes</goal>
-                <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
-            </goals>
-            <properties>
-                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath com.tgm.Boot</exec.args>
-                <exec.executable>java</exec.executable>
-                <jpda.listen>true</jpda.listen>
-            </properties>
-        </action>
-        <action>
-            <actionName>profile</actionName>
-            <goals>
-                <goal>process-classes</goal>
-                <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
-            </goals>
-            <properties>
-                <exec.args>${profiler.args} -classpath %classpath com.tgm.Boot</exec.args>
-                <exec.executable>${profiler.java}</exec.executable>
-            </properties>
-        </action>
-    </actions>
+    <action>
+        <actionName>run</actionName>
+        <goals>
+            <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
+        </goals>
+        <properties>
+            <exec.args>-classpath %classpath com.tgm.Boot</exec.args>
+            <exec.executable>java</exec.executable>
+            <exec.workingdir>./target</exec.workingdir>
+        </properties>
+    </action>
+    <action>
+        <actionName>debug</actionName>
+        <goals>
+            <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
+        </goals>
+        <properties>
+            <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath com.tgm.Boot</exec.args>
+            <exec.executable>java</exec.executable>
+            <jpda.listen>true</jpda.listen>
+            <exec.workingdir>./target</exec.workingdir>
+        </properties>
+    </action>
+    <action>
+        <actionName>profile</actionName>
+        <goals>
+            <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
+        </goals>
+        <properties>
+            <exec.args>${profiler.args} -classpath %classpath com.tgm.Boot</exec.args>
+            <exec.executable>${profiler.java}</exec.executable>
+            <exec.workingdir>./target</exec.workingdir>
+        </properties>
+    </action>
+    
+    <action>
+        <actionName>CUSTOM-RESOLUTION 800x600</actionName>
+        <displayName>Resolution 800x600</displayName>
+        <goals>
+            <goal>resources:resources</goal>
+        </goals>
+        <properties>
+            <custom.property>800x600</custom.property>
+        </properties>
+    </action>
+    
+    <action>
+        <actionName>CUSTOM-RESOLUTION 800x600f</actionName>
+        <displayName>Resolution 800x600 Fullscreen</displayName>
+        <goals>
+            <goal>resources:resources</goal>
+        </goals>
+        <properties>
+            <custom.property>800x600f</custom.property>
+        </properties>
+    </action>
+    
+    <action>
+        <actionName>CUSTOM-RESOLUTION 1024x768</actionName>
+        <displayName>Resolution 1024x768</displayName>
+        <goals>
+            <goal>resources:resources</goal>
+        </goals>
+        <properties>
+            <custom.property>1024x768</custom.property>
+        </properties>
+    </action>
+    
+    <action>
+        <actionName>CUSTOM-RESOLUTION 1024x768f</actionName>
+        <displayName>Resolution 1024x768 Fullscreen</displayName>
+        <goals>
+            <goal>resources:resources</goal>
+        </goals>
+        <properties>
+            <custom.property>1024x768f</custom.property>
+        </properties>
+    </action>
+    
+</actions>
