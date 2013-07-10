@@ -128,24 +128,48 @@
     </profiles>
     
     <build>
+        
         <resources>
-            <!-- iSupervisor Config -->
             <resource>
-                <targetPath>${basedir}/target/classes/resources</targetPath>
-                <directory>src/main/resources/</directory>
+                <targetPath>${basedir}/target/classes/META-INF</targetPath>
+                <directory>src/main/resources/META-INF</directory>
+                <filtering>true</filtering>
+            </resource>
+            
+            <!--<resource>
+                <targetPath>${basedir}/target/classes/resources/media</targetPath>
+                <directory>src/main/resources/app</directory>
                 <filtering>true</filtering>
                 <excludes>
                     <exclude>**/*.ttf</exclude>
                 </excludes>
+            </resource>-->
+            
+            <resource>
+                <targetPath>${basedir}/target/media</targetPath>
+                <directory>src/main/resources/media</directory>
+                <filtering>false</filtering>
+                <!--<includes>
+                    <include>**/*.ttf</include>
+                </includes>-->
+            </resource>
+           
+            <resource>
+                <targetPath>${basedir}/target/configs</targetPath>
+                <directory>src/main/resources/configs</directory>
+                <filtering>true</filtering>
+            </resource>
+           
+            <resource>
+                <targetPath>${basedir}/target/properties</targetPath>
+                <directory>src/main/resources/properties/default</directory>
+                <filtering>true</filtering>
             </resource>
             
             <resource>
-                <targetPath>${basedir}/target/classes/resources</targetPath>
-                <directory>src/main/resources/</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>**/*.ttf</include>
-                </includes>
+                <targetPath>${basedir}/target/properties</targetPath>
+                <directory>src/main/resources/properties/custom/${custom.property}</directory>
+                <filtering>true</filtering>
             </resource>
            
         </resources>
