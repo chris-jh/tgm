@@ -4,6 +4,8 @@
  */
 package com.tgm.emu;
 
+import java.util.List;
+
 /**
  *
  * @author christopher
@@ -12,7 +14,7 @@ public class EmuConfig {
     private String name;
     private String emuPath;
     private String emuArgs;
-    private String romPath;
+    private List<String> romPath;
 
     /**
      * @return the name
@@ -59,14 +61,14 @@ public class EmuConfig {
     /**
      * @return the romPath
      */
-    public String getRomPath() {
+    public List<String> getRomPath() {
         return romPath;
     }
 
     /**
      * @param romPath the romPath to set
      */
-    public void setRomPath(String romPath) {
+    public void setRomPath(List<String> romPath) {
         this.romPath = romPath;
     }
 }
