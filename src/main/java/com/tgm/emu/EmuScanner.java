@@ -18,13 +18,15 @@ public class EmuScanner implements InitializingBean {
 
     @Autowired
     private ApplicationContext context;
-    
+
     public void afterPropertiesSet() throws Exception {
         Logger.getLogger(this.getClass()).info("EmuScanner Initilize");
-        
+
         for (Map.Entry<String, EmuConfig> entry : context.getBeansOfType(EmuConfig.class).entrySet()) {
-            Logger.getLogger(this.getClass()).info("Loading Emu Config: "+entry.getValue().getName());
-            
+            Logger.getLogger(this.getClass()).info("Loading Emu Config: " + entry.getValue().getName());
+            for (String string : entry.getValue().getRomPath()) {
+                Logger.getLogger(this.getClass()).info("Loading Emu Config: " + entry.getValue().getName() + " Searching Rom Path [" + string + "]");
+            }
         }
     }
 
@@ -34,5 +36,4 @@ public class EmuScanner implements InitializingBean {
     public void setContext(ApplicationContext context) {
         this.context = context;
     }
-    
 }
