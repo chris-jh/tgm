@@ -4,6 +4,7 @@
  */
 package com.tgm;
 
+import com.tgm.kickstarter.KickStartInterface;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -15,7 +16,7 @@ public class Boot {
 
     public static void main(String[] args) {
         String config = "classpath:/META-INF/application-context.xml";
-        
+
         if ((args != null) && (args.length == 1)) {
             if (StringUtils.contains(args[0], "file:")) {
                 config = args[0];
@@ -29,8 +30,12 @@ public class Boot {
         }
 
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(config);
-
         context.registerShutdownHook();
+
+        //Need to do this to solve @Transaction issues
+        KickStartInterface emu = (KickStartInterface) context.getBean("kickStarter");
+        emu.kickStart();
+
         try {
             while (true) {
                 Thread.sleep(5000);
