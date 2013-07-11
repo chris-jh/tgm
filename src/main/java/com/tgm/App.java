@@ -46,13 +46,17 @@ public class App implements AppInterface, InitializingBean, Runnable {
     public App() {
     }
 
-    public void afterPropertiesSet() throws Exception {
-        Logger.getLogger(this.getClass()).info("SCREEN: "+width+","+height+" FULLSCREEN: "+fullscreen);
-        init();
+    public void init(){
+        initApp();
         play();
     }
+    
+    public void afterPropertiesSet() throws Exception {
+        //Logger.getLogger(this.getClass()).info("SCREEN: "+width+","+height+" FULLSCREEN: "+fullscreen);
+        
+    }
 
-    private void init() {
+    private void initApp() {
         initSFML();
         initScreen();
         initScenes();
