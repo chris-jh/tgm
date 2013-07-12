@@ -4,14 +4,12 @@
  */
 package com.tgm.data.dao;
 
-import com.tgm.data.entity.EmulatorGame;
 import com.tgm.data.entity.EntityInterface;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataAccessException;

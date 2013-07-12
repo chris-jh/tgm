@@ -48,6 +48,7 @@ public class SetupDatabase implements InitializingBean {
         File f = new File(p + "/db/tgm-database.script");
         try {
             if (!f.exists()) {
+                f = new File(p + "/db");
                 f.mkdirs();
                 return false;
             }
