@@ -77,7 +77,7 @@ public class PlatformScanner {
 
         for (Path path : config.getGamePath()) {
             String romPath = path.getPath();
-            Logger.getLogger(this.getClass()).info("    Scanning Rom Path: [" + romPath + "]");
+            Logger.getLogger(this.getClass()).info("    Scanning Game Path: [" + romPath + "]");
             if (Protocol.SMB.equals(path.getProtocol())) {
             }
 
@@ -86,7 +86,7 @@ public class PlatformScanner {
             for (int i = 0; i < max; i++) {
                 GameEntity g = gameDao.createInstance();
                 int t = RandomUtils.nextInt(999999);
-                g.setRomLocation(romPath + "/" + t + ".rom");
+                g.setGamePath(romPath + "/" + t + ".rom");
                 g.setName("" + t);
                 g.setPlatformRef(e);
                 g = gameDao.saveOrUpdate(g);

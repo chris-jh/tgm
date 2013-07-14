@@ -42,8 +42,8 @@ public class GameEntity implements EntityInterface, Serializable {
     private Integer version;
     @Column(name = "name", nullable = false)
     private String name;
-    @Column(name = "rom_location", nullable = false)
-    private String romLocation;
+    @Column(name = "game_path", nullable = false)
+    private String gamePath;
     @JoinColumn(name = "platform_ref", referencedColumnName = "id")
     @ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     private PlatformEntity platformRef;
@@ -104,20 +104,7 @@ public class GameEntity implements EntityInterface, Serializable {
         this.version = version;
     }
 
-    /**
-     * @return the romLocation
-     */
-    public String getRomLocation() {
-        return romLocation;
-    }
-
-    /**
-     * @param romLocation the romLocation to set
-     */
-    public void setRomLocation(String romLocation) {
-        this.romLocation = romLocation;
-    }
-
+    
     /**
      * @return the platformRef
      */
@@ -204,5 +191,19 @@ public class GameEntity implements EntityInterface, Serializable {
      */
     public void setImageArtPath(String imageArtPath) {
         this.imageArtPath = imageArtPath;
+    }
+
+    /**
+     * @return the gamePath
+     */
+    public String getGamePath() {
+        return gamePath;
+    }
+
+    /**
+     * @param gamePath the gamePath to set
+     */
+    public void setGamePath(String gamePath) {
+        this.gamePath = gamePath;
     }
 }
