@@ -10,7 +10,7 @@ CREATE TABLE game (
     version INTEGER DEFAULT 0 NOT NULL,
     platform_ref INTEGER NOT NULL,
     name VARCHAR(200) NOT NULL,
-    rom_location VARCHAR(200) NOT NULL,
+    game_path VARCHAR(200) NOT NULL,
     external_id BIGINT,
     overview_text VARCHAR(200),
     image_box_art_path VARCHAR(200),
