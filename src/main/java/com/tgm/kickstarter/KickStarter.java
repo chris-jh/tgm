@@ -5,7 +5,7 @@
 package com.tgm.kickstarter;
 
 import com.tgm.App;
-import com.tgm.emu.EmuScanner;
+import com.tgm.scanner.PlatformScanner;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,22 +16,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class KickStarter implements KickStartInterface {
 
     @Autowired
-    private EmuScanner emuTest;
+    private PlatformScanner platformScanner;
     
     @Autowired
     private App app;
     
     public void kickStart(){
-        Logger.getLogger(this.getClass()).info("EmuBoot");
-        emuTest.scan();
-        app.init();
+        Logger.getLogger(this.getClass()).info("Kickstarting...");
+        platformScanner.scan();
+        //app.init();
     }
 
     /**
-     * @param emuTest the emuTest to set
+     * @param PlatformScanner the platformScanner to set
      */
-    public void setEmuTest(EmuScanner emuTest) {
-        this.emuTest = emuTest;
+    public void setPlatformScanner(PlatformScanner platformScanner) {
+        this.platformScanner = platformScanner;
     }
 
     /**
