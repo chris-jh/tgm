@@ -6,7 +6,6 @@ package com.tgm.config;
 
 import com.tgm.enums.Platform;
 import com.tgm.resources.Path;
-import com.tgm.resources.Path;
 import java.util.List;
 import org.springframework.util.Assert;
 
@@ -15,58 +14,19 @@ import org.springframework.util.Assert;
  * @author christopher
  */
 public class PlatformConfig {
+
     private Platform platform;
-    private String emuPath;
-    private String emuArgs;
-    private List<Path> romPath;
-    
+    private String emulatorPath;
+    private String emulatorArgs;
+    private List<Path> gamePath;
+
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(platform);
-        Assert.notNull(emuPath);
-        Assert.notNull(emuArgs);
-        Assert.notNull(romPath);
-    }
-
-    /**
-     * @return the emuPath
-     */
-    public String getEmuPath() {
-        return emuPath;
-    }
-
-    /**
-     * @param emuPath the emuPath to set
-     */
-    public void setEmuPath(String emuPath) {
-        this.emuPath = emuPath;
-    }
-
-    /**
-     * @return the emuArgs
-     */
-    public String getEmuArgs() {
-        return emuArgs;
-    }
-
-    /**
-     * @param emuArgs the emuArgs to set
-     */
-    public void setEmuArgs(String emuArgs) {
-        this.emuArgs = emuArgs;
-    }
-
-    /**
-     * @return the romPath
-     */
-    public List<Path> getRomPath() {
-        return romPath;
-    }
-
-    /**
-     * @param romPath the romPath to set
-     */
-    public void setRomPath(List<Path> romPath) {
-        this.romPath = romPath;
+        Assert.notNull(gamePath);
+        if (!Platform.PC.equals(platform)) {
+            Assert.notNull(emulatorPath);
+            Assert.notNull(emulatorArgs);
+        }
     }
 
     /**
@@ -83,4 +43,45 @@ public class PlatformConfig {
         this.platform = platform;
     }
 
+    /**
+     * @return the emulatorPath
+     */
+    public String getEmulatorPath() {
+        return emulatorPath;
+    }
+
+    /**
+     * @param emulatorPath the emulatorPath to set
+     */
+    public void setEmulatorPath(String emulatorPath) {
+        this.emulatorPath = emulatorPath;
+    }
+
+    /**
+     * @return the emulatorArgs
+     */
+    public String getEmulatorArgs() {
+        return emulatorArgs;
+    }
+
+    /**
+     * @param emulatorArgs the emulatorArgs to set
+     */
+    public void setEmulatorArgs(String emulatorArgs) {
+        this.emulatorArgs = emulatorArgs;
+    }
+
+    /**
+     * @return the gamePath
+     */
+    public List<Path> getGamePath() {
+        return gamePath;
+    }
+
+    /**
+     * @param gamePath the gamePath to set
+     */
+    public void setGamePath(List<Path> gamePath) {
+        this.gamePath = gamePath;
+    }
 }

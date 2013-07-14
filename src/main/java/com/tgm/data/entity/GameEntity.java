@@ -119,17 +119,17 @@ public class GameEntity implements EntityInterface, Serializable {
     }
 
     /**
-     * @return the emulatorRef
+     * @return the platformRef
      */
     public PlatformEntity getPlatformRef() {
         return platformRef;
     }
 
     /**
-     * @param emulatorRef the emulatorRef to set
+     * @param platformRef the platformRef to set
      */
-    public void setPlatformRef(PlatformEntity emulatorRef) {
-        this.platformRef = emulatorRef;
+    public void setPlatformRef(PlatformEntity platformRef) {
+        this.platformRef = platformRef;
     }
 
     public void fetch() {

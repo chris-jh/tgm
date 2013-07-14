@@ -102,7 +102,7 @@ public class PlatformEntity implements EntityInterface, Serializable {
     }
 
     /**
-     * @param emulatorGameList the gameList to set
+     * @param gameList the gameList to set
      */
     public void setGameList(Set<GameEntity> gameList) {
         this.gameList = gameList;
