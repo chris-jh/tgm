@@ -23,14 +23,17 @@ public abstract class AbstractScene implements SceneInterface {
     protected String sceneName = null;
     protected AppInterface appInterface;
 
+    @Override
     public String getSceneName() {
         return sceneName;
     }
 
+    @Override
     public boolean isPlaying() {
         return playing;
     }
 
+    @Override
     public void play() {
         if (!isPlaying()) {
             reset();
@@ -48,9 +51,13 @@ public abstract class AbstractScene implements SceneInterface {
         appInterface.quit();
     }
 
-    protected Path readMedia(String media) {
-        File f = new File(TgmResource.MEDIA + "/" + media);
-        Logger.getLogger(this.getClass()).info("LOAD RESOURCE: [" + TgmResource.MEDIA + "/" + media + "] = " + f.getAbsolutePath());
-        return f.toPath();
+    @Override
+    public void stopPlaying() {
+        playing = false;
+    }
+
+    @Override
+    public void updateNextScene(SceneEnum scene) {
+        playNextScene(scene);
     }
 }

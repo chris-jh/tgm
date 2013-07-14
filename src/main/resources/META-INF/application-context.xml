@@ -63,8 +63,8 @@
         <entry key="MAIN">
             <bean class="com.tgm.scene.MainScene"/>
         </entry>
-        <entry key="NEXT">
-            <bean class="com.tgm.scene.NextTestScene"/>
+        <entry key="SCAN_FOR_GAMES">
+            <bean class="com.tgm.scene.ScanForGamesScene"/>
         </entry>
     </util:map>
     

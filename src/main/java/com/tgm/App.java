@@ -3,6 +3,8 @@ package com.tgm;
 import com.tgm.enums.SceneEnum;
 import com.tgm.interfaces.AppInterface;
 import com.tgm.interfaces.SceneInterface;
+import com.tgm.scene.extra.Fonts;
+import com.tgm.scene.extra.Menu;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -33,7 +35,7 @@ public class App implements AppInterface, InitializingBean, Runnable {
     @Value(value = "${tgm.width:800}")
     private int width;
     @Value(value = "${tgm.height:600}")
-    private int height;    
+    private int height;
     @Value(value = "${tgm.fullscreen:false}")
     private boolean fullscreen;
     private String title = "TGM";
@@ -42,24 +44,31 @@ public class App implements AppInterface, InitializingBean, Runnable {
     private TaskExecutor taskExecutor;
     private boolean running = true;
     private ConcurrentLinkedQueue<SceneEnum> sceneQueue = new ConcurrentLinkedQueue<SceneEnum>();
+    public static final Fonts fonts = new Fonts();
+    public static final Menu menu = new Menu();
 
     public App() {
     }
 
-    public void init(){
+    public void init() throws Exception {
         initApp();
         play();
     }
-    
+
     public void afterPropertiesSet() throws Exception {
         //Logger.getLogger(this.getClass()).info("SCREEN: "+width+","+height+" FULLSCREEN: "+fullscreen);
-        
     }
 
-    private void initApp() {
+    private void initApp() throws Exception {
         initSFML();
         initScreen();
+        initExtra();
         initScenes();
+    }
+
+    private void initExtra() throws Exception {
+        fonts.init();
+        menu.init(this);
     }
 
     private void initSFML() {
@@ -112,6 +121,7 @@ public class App implements AppInterface, InitializingBean, Runnable {
 
     /**
      * Play The Scene.
+     *
      * @param scene
      */
     private void playScene(SceneEnum sceneEnum) {
@@ -199,6 +209,9 @@ public class App implements AppInterface, InitializingBean, Runnable {
     }
 
     public void quit() {
+        if (getPlayingScene() != null) {
+            getPlayingScene().stopPlaying();
+        }
         running = false;
         System.exit(0);
     }

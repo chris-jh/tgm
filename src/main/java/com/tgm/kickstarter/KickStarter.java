@@ -17,15 +17,18 @@ public class KickStarter implements KickStartInterface {
 
     @Autowired
     private PlatformScanner platformScanner;
-    
     @Autowired
     private App app;
-    
-    public void kickStart(){
+
+    public void kickStart() {
         Logger.getLogger(this.getClass()).info("Kickstarting...");
-        platformScanner.scan();//TODO: Move so scanning takes place from App GUI
-        
-        app.init();
+        //platformScanner.scan();//TODO: Move so scanning takes place from App GUI
+
+        try {
+            app.init();
+        } catch (Exception e) {
+            Logger.getLogger(this.getClass()).fatal(e);
+        }
     }
 
     /**
