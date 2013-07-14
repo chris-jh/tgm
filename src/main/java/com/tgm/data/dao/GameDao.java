@@ -6,6 +6,7 @@ package com.tgm.data.dao;
 
 import com.tgm.data.entity.GameEntity;
 import com.tgm.data.entity.PlatformEntity;
+import com.tgm.enums.Platform;
 import java.util.List;
 import javax.persistence.NoResultException;
 import org.springframework.stereotype.Repository;
@@ -26,6 +27,13 @@ public class GameDao extends AbstractDao<GameEntity, Integer> {
     public GameEntity findGameByName(String name) throws NoResultException {
         return (GameEntity)getEntityManager().createNamedQuery("GameEntity.findByName").setParameter("name", name).getSingleResult();
     }
+    
+    @Transactional(readOnly = true)
+    public GameEntity findByNameAndPlatform(String name, PlatformEntity platform) throws NoResultException {
+        return (GameEntity)getEntityManager().createNamedQuery("GameEntity.findByNameAndPlatform").setParameter("name", name).setParameter("platform", platform).getSingleResult();
+    }
+    
+    
     
     @Transactional(readOnly = true)
     public List<GameEntity> findGamesByPlaform(PlatformEntity platform) throws NoResultException {

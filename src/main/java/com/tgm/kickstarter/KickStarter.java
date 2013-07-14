@@ -23,8 +23,9 @@ public class KickStarter implements KickStartInterface {
     
     public void kickStart(){
         Logger.getLogger(this.getClass()).info("Kickstarting...");
-        platformScanner.scan();
-        //app.init();
+        platformScanner.scan();//TODO: Move so scanning takes place from App GUI
+        
+        app.init();
     }
 
     /**

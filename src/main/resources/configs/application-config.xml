@@ -17,9 +17,9 @@
 
     
     <bean class="com.tgm.config.PlatformConfig" p:platform="SEGA_MEGA_DRIVE" p:emulatorPath="/some/path/here" p:emulatorArgs="-f">
-        <property name="romPath">
+        <property name="gamePath">
             <list value-type="com.tgm.resources.Path">
-                <bean class="com.tgm.resources.Path" p:protocol="SMB" p:path="//192.168.4.254/roms/SEGA/Roms\ GoodGen\ 3.0" p:username="test" p:password="test"/>
+                <bean class="com.tgm.resources.Path" p:protocol="SMB" p:path="192.168.4.254/roms/SEGA/Roms GoodGen 3.0" p:username="test" p:password="test"/>
             </list>
         </property>
     </bean>

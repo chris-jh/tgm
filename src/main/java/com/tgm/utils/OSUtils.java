@@ -16,6 +16,7 @@ public class OSUtils {
 
     private static String OS = System.getProperty("os.name").toLowerCase();
     private static String HOME = System.getProperty("user.home");
+    private static String TEMP = System.getProperty("java.io.tmpdir");
     @Value(value = "${tgm.path:~/.tgm}")
     private String tmgPath;
 
@@ -37,6 +38,10 @@ public class OSUtils {
         } else {
             return tmgPath;
         }
+    }
+    
+    public static String getTempPath(){
+        return TEMP;
     }
 
     /**

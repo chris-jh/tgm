@@ -65,7 +65,7 @@ public abstract class AbstractDao<E extends EntityInterface, I extends Serializa
     }
 
     @Transactional
-    public E saveOrUpdate(E e) {
+    public E saveOrUpdate(E e) throws Exception {
         return getEntityManager().merge(e);
     }
 

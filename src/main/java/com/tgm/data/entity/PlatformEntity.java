@@ -34,7 +34,7 @@ import javax.persistence.Version;
 })
 public class PlatformEntity implements EntityInterface, Serializable {
 
-    public final static String table = "Platform";
+    public final static String table = "PlatformEntity";
     @Id
     @Basic(optional = false)
     @GeneratedValue(strategy = GenerationType.AUTO)

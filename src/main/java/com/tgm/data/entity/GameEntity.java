@@ -28,11 +28,12 @@ import javax.persistence.Version;
 @Table(name = "game")
 @NamedQueries({
     @NamedQuery(name = "GameEntity.findByName", query = "SELECT a FROM GameEntity a WHERE a.name = :name"),
+    @NamedQuery(name = "GameEntity.findByNameAndPlatform", query = "SELECT a FROM GameEntity a WHERE a.name = :name AND a.platformRef = :platform"),
     @NamedQuery(name = "GameEntity.findGamesByPlatform", query = "SELECT a FROM GameEntity a WHERE a.platformRef = :platform")
 })
 public class GameEntity implements EntityInterface, Serializable {
 
-    private static final String table = "Game";
+    private static final String table = "GameEntity";
     @Id
     @Basic(optional = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -47,15 +48,15 @@ public class GameEntity implements EntityInterface, Serializable {
     @JoinColumn(name = "platform_ref", referencedColumnName = "id")
     @ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     private PlatformEntity platformRef;
-    @Column(name = "external_id", nullable = false)
+    @Column(name = "external_id", nullable = true)
     private Long externalId;
-    @Column(name = "overview_text", nullable = false)
+    @Column(name = "overview_text", nullable = true)
     private String overviewText;
-    @Column(name = "image_box_art_path", nullable = false)
+    @Column(name = "image_box_art_path", nullable = true)
     private String imageBoxArtPath;
-    @Column(name = "image_screen_shot_path", nullable = false)
+    @Column(name = "image_screen_shot_path", nullable = true)
     private String imageScreenShotPath;
-    @Column(name = "image_art_path", nullable = false)
+    @Column(name = "image_art_path", nullable = true)
     private String imageArtPath;
 
     /**
