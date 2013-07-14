@@ -10,15 +10,17 @@ import com.tgm.data.dao.GameDao;
 import com.tgm.data.entity.PlatformEntity;
 import com.tgm.data.entity.GameEntity;
 import com.tgm.enums.Platform;
-import com.tgm.enums.Protocol;
 import com.tgm.resources.Path;
+import com.tgm.utils.GameUtils;
 import com.tgm.utils.MountUtils;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.lang.math.RandomUtils;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -38,18 +40,30 @@ public class PlatformScanner {
     private MountUtils mountUtils;
     private final HashMap<Platform, PlatformConfig> platformConfigs = new HashMap<Platform, PlatformConfig>();
     private final String assertMessage = "An PlatformConfig already contains platform ";
+    private boolean scanning = false;
+    private Lock scanLock = new ReentrantLock(true);
 
+    @Async
     public void scan() {
-        Logger.getLogger(this.getClass()).info("Platform Scanner Initialised...");
+        if (scanLock.tryLock()) {
+            try {
+                Logger.getLogger(this.getClass()).info("Platform Scanner Initialised...");
 
-        findAllPlatformConfigs();
+                findAllPlatformConfigs();
 
-        /*for (Map.Entry<Platform, PlatformConfig> entry : platformConfigs.entrySet()) {
-         scanPlatform(entry.getValue());
-         }
+                for (Map.Entry<Platform, PlatformConfig> entry : platformConfigs.entrySet()) {
+                    scanPlatform(entry.getValue());
+                }
+                
+                showList();
+                Logger.getLogger(this.getClass()).info("Platform Scanner Initialised...Completed");
 
-         showList();*/
-        Logger.getLogger(this.getClass()).info("Platform Scanner Initialised...Completed");
+            } finally {
+                scanLock.unlock();
+            }
+        } else {
+            Logger.getLogger(this.getClass()).info("Platform Scanner Already Scanning......");
+        }
 
     }
 
@@ -63,6 +77,51 @@ public class PlatformScanner {
     @Transactional
     public void scanPlatform(PlatformConfig config) {
         Logger.getLogger(this.getClass()).info("Scanning Platform: " + config.getPlatform());
+        try {
+            PlatformEntity platform = savePlatform(config);
+            for (Path path : config.getGamePath()) {
+                scanGamePath(platform, path);
+            }
+            Logger.getLogger(this.getClass()).info("Scanning Platform: " + config.getPlatform() + " Done");
+        } catch (Exception e) {
+            Logger.getLogger(this.getClass()).fatal(e);
+        }
+    }
+
+    public void scanGamePath(PlatformEntity platform, Path path) {
+        Logger.getLogger(this.getClass()).info("Scanning Game Path: [" + path.getPath() + "]");
+        if (mountUtils.isMountable(path)) {
+            if (mountUtils.mount(platform.getName(), path)) {
+                try {
+                    GameUtils.processGameFiles(this, platform.getName(), mountUtils.getMountedPath(platform.getName(), path), platform.getName().getFileTypes(), true);
+                } catch (Exception e) {
+                    Logger.getLogger(this.getClass()).fatal(e);
+                }
+                if (!mountUtils.unmount(platform.getName(), path)) {
+                    Logger.getLogger(this.getClass()).fatal("Unable to unmount drive for platform: " + platform.getName());
+                }
+            } else {
+                Logger.getLogger(this.getClass()).fatal("Unable to mount drive check gamepath config for platform: " + platform.getName());
+            }
+        } else {
+            try {
+                GameUtils.processGameFiles(this, platform.getName(), mountUtils.getMountedPath(platform.getName(), path), platform.getName().getFileTypes(), false);
+            } catch (Exception e) {
+                Logger.getLogger(this.getClass()).fatal(e);
+            }
+        }
+        Logger.getLogger(this.getClass()).info("Scanning Game Path: [" + path.getPath() + "] Completed");
+    }
+
+    //TODO: Add method to find game details from thegamesdb.net
+    @Transactional
+    public void processGame(Platform platform, String fileName, String path) throws Exception {
+        Logger.getLogger(this.getClass()).info("Found Game: " + platform.name() + " - " + fileName + " | [" + path + "]");
+        saveGame(platformDao.findPlatformByName(platform), fileName, path);
+    }
+
+    @Transactional
+    public PlatformEntity savePlatform(PlatformConfig config) throws Exception {
         PlatformEntity e = null;
         try {
             e = platformDao.findPlatformByName(config.getPlatform());
@@ -74,36 +133,44 @@ public class PlatformScanner {
             e.setName(config.getPlatform());
             e = platformDao.saveOrUpdate(e);
         }
+        return e;
+    }
 
-        for (Path path : config.getGamePath()) {
-            String romPath = path.getPath();
-            Logger.getLogger(this.getClass()).info("    Scanning Game Path: [" + romPath + "]");
-            if (Protocol.SMB.equals(path.getProtocol())) {
+    @Transactional
+    public GameEntity saveGame(PlatformEntity platform, String name, String path) throws Exception {
+        GameEntity g = null;
+        try {
+            try {
+                g = gameDao.findByNameAndPlatform(name, platform);
+            } catch (Exception e) {
+                g = null;
             }
 
-
-            int max = RandomUtils.nextInt(10);
-            for (int i = 0; i < max; i++) {
-                GameEntity g = gameDao.createInstance();
-                int t = RandomUtils.nextInt(999999);
-                g.setGamePath(romPath + "/" + t + ".rom");
-                g.setName("" + t);
-                g.setPlatformRef(e);
+            if (g == null) {
+                g = gameDao.createInstance();
+                g.setGamePath(path);
+                g.setName(name);
+                g.setPlatformRef(platform);
                 g = gameDao.saveOrUpdate(g);
-                Logger.getLogger(this.getClass()).info("        Found: [" + g.getName() + "]");
+                Logger.getLogger(this.getClass()).info("SAVED GAME: " + g.toString() + " " + g.getName() + " " + g.getId());
+                return g;
+            } else {
+                return g;
             }
+        } finally {
+            g = null;
         }
-        Logger.getLogger(this.getClass()).info("Scanning Platform: " + config.getPlatform() + " Done");
-
     }
 
     @Transactional
     public void showList() {
-        Logger.getLogger(this.getClass()).info("Game List...");
+        Logger.getLogger(this.getClass()).info("\n\n\nGame List...");
+        int c = 0;
         for (GameEntity game : gameDao.findAllAndFetch()) {
-            Logger.getLogger(this.getClass()).info("   " + game.getPlatformRef().getName() + " - " + game.getName() + " [" + game.getRomLocation() + "]");
+            Logger.getLogger(this.getClass()).info("   " + game.getPlatformRef().getName() + " - " + game.getName() + " [" + game.getGamePath() + "]");
+            c++;
         }
-        Logger.getLogger(this.getClass()).info("Game List...Done");
+        Logger.getLogger(this.getClass()).info("Game List...Done [" + c + "]");
     }
 
     /**

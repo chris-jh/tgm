@@ -57,6 +57,8 @@
         </property>
     </bean>
     
+    <task:annotation-driven executor="mainExecutor" />
+
     <util:map id="scenes" key-type="com.tgm.enums.SceneEnum">
         <entry key="MAIN">
             <bean class="com.tgm.scene.MainScene"/>
