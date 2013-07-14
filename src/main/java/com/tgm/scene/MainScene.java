@@ -4,20 +4,14 @@
  */
 package com.tgm.scene;
 
+import com.tgm.App;
 import com.tgm.enums.SceneEnum;
 import com.tgm.interfaces.AppInterface;
-import org.apache.log4j.Logger;
-import org.jsfml.graphics.Color;
-import org.jsfml.graphics.FloatRect;
-import org.jsfml.graphics.Font;
-import org.jsfml.graphics.PrimitiveType;
+import com.tgm.utils.SceneUtils;
 import org.jsfml.graphics.RenderStates;
 import org.jsfml.graphics.Sprite;
 import org.jsfml.graphics.Text;
 import org.jsfml.graphics.Texture;
-import org.jsfml.graphics.Vertex;
-import org.jsfml.graphics.VertexArray;
-import org.jsfml.system.Vector2f;
 import org.jsfml.window.event.Event;
 
 /**
@@ -26,80 +20,26 @@ import org.jsfml.window.event.Event;
  */
 public class MainScene extends AbstractScene {
 
-    private final VertexArray background = new VertexArray(PrimitiveType.QUADS);
-    private final Texture backgroundTexture = new Texture();
-    private final Sprite backgroundSprite = new Sprite();
-    private RenderStates backgroundStates = RenderStates.DEFAULT;
-    private final Font freeSansFont = new Font();
-    private final Text titleText = new Text("The Games Menu\n     Main Scene", freeSansFont);
-    private final Text titleTextShadow = new Text(titleText.getString(), freeSansFont);
-    private final Text infoText = new Text(
-            "Press N:\t\tNext Scene\n"
-            + "Press Esc:\tQuit", freeSansFont);
-    private float textSpinSpeed = 0.002f;
-    private float textScaleValue = 0.0f;
-
     {
         sceneName = "Main Scene";
     }
 
+    @Override
     public void initialize(AppInterface appInterface) throws Exception {
         this.appInterface = appInterface;
         screenWidth = appInterface.getRenderTarget().getSize().x;
         screenHeight = appInterface.getRenderTarget().getSize().y;
-
-        background.add(new Vertex(new Vector2f(0, 0), Color.RED));
-        background.add(new Vertex(new Vector2f(screenWidth, 0), Color.BLUE));
-        background.add(new Vertex(new Vector2f(screenWidth, screenHeight), Color.GREEN));
-        background.add(new Vertex(new Vector2f(0, screenHeight), Color.YELLOW));
-
-        backgroundTexture.loadFromFile(readMedia("images/background.png"));
-        backgroundTexture.setSmooth(true);
-
-        //Setup logo sprite
-        backgroundSprite.setTexture(backgroundTexture);
-        backgroundSprite.setPosition(0, 0);
-        backgroundSprite.setScale((float) screenWidth / backgroundTexture.getSize().x, (float) screenHeight / backgroundTexture.getSize().y);
-
-        freeSansFont.loadFromFile(readMedia("fonts/FreeSans.ttf"));
-
-        titleText.setFont(freeSansFont);
-        titleText.setStyle(Text.BOLD);
-        titleText.setColor(new Color(255, 255, 255, 192));
-        titleText.setCharacterSize(16);
-        textScaleValue = 1.0f;
-
-        FloatRect titleTextBounds = titleText.getLocalBounds();
-
-        titleText.setOrigin(titleTextBounds.width / 2, titleTextBounds.height / 2);
-
-        titleText.setPosition((float) screenWidth / 8, 18);
-
-        titleTextShadow.setFont(freeSansFont);
-        titleTextShadow.setStyle(Text.BOLD);
-        titleTextShadow.setColor(new Color(0, 0, 0, 128));
-        titleTextShadow.setCharacterSize(16);
-
-        FloatRect titleTextShadowBounds = titleText.getLocalBounds();
-        titleTextShadow.setOrigin(titleTextShadowBounds.width / 2, titleTextShadowBounds.height / 2);
-        titleTextShadow.setPosition(((float) screenWidth / 8) + 2, 20);
-
-        infoText.setFont(freeSansFont);
-        infoText.setStyle(Text.BOLD);
-        infoText.setColor(new Color(255, 255, 255, 192));
-        infoText.setCharacterSize(12);
-        infoText.setPosition(7, 50);
-
     }
 
+    @Override
     public void reset() {
-        textScaleValue = 1.0f;
-        dir = 0;
-        pause = false;
-        pauseTime = 0;
+
     }
 
+    @Override
     public void handleEvent(Event event) {
+        App.menu.menuHandleEvent(event, this);
+        
         switch (event.type) {
             case CLOSED: {
                 quit();
@@ -129,51 +69,14 @@ public class MainScene extends AbstractScene {
 
         }
     }
-    int dir = 0;
-    boolean pause = false;
-    long pauseTime = 0;
-
+    
+    @Override
     public void update(float dt) {
-
-        if (pause) {
-            if (System.currentTimeMillis() > pauseTime) {
-                pause = false;
-            }
-        } else {
-            if (dir == 0) {
-                textScaleValue += textSpinSpeed;
-                if (textScaleValue > 1.0) {
-                    dir = 1;
-                    pause = true;
-                    pauseTime = System.currentTimeMillis() + 1000;
-                }
-            } else if (dir == 1) {
-                textScaleValue -= textSpinSpeed;
-                if (textScaleValue < -1.0) {
-                    dir = 0;
-                }
-            }
-        }
-
-
-
-        titleText.setScale(textScaleValue, titleText.getScale().y);
-        titleTextShadow.setScale(textScaleValue, titleText.getScale().y);
-
-
+        App.menu.update();
     }
 
+    @Override
     public void render() {
-        appInterface.getRenderTarget().draw(background);
-
-        appInterface.getRenderTarget().draw(backgroundSprite, backgroundStates);
-
-        appInterface.getRenderTarget().draw(titleTextShadow);
-        appInterface.getRenderTarget().draw(titleText);
-
-        appInterface.getRenderTarget().draw(infoText);
-
-
-
+        App.menu.render();
     }
 }

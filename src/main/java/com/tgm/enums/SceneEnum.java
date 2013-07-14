@@ -10,5 +10,6 @@ package com.tgm.enums;
  */
 public enum SceneEnum {
     MAIN,
+    SCAN_FOR_GAMES,
     NEXT
 }

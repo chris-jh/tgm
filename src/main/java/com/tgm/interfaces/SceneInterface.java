@@ -58,5 +58,9 @@ public interface SceneInterface {
      * @param target The render target.
      */
     public void render();
+    
+    public void stopPlaying();
 
+    public void updateNextScene(SceneEnum scene);
+    
 }
