@@ -15,13 +15,14 @@ import org.springframework.util.Assert;
 public class Path implements InitializingBean{
 
     private String path;
+    private String gameExecutor;
     private String username;
     private String password;
-    private Protocol protocol;
+    private Protocol protocol = Protocol.FILE;
     
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(protocol);
-        Assert.notNull(path);
+        Assert.notNull(path);        
     }
     
 
@@ -79,6 +80,20 @@ public class Path implements InitializingBean{
      */
     public void setProtocol(Protocol protocol) {
         this.protocol = protocol;
+    }
+
+    /**
+     * @return the gameExecutor
+     */
+    public String getGameExecutor() {
+        return gameExecutor;
+    }
+
+    /**
+     * @param gameExecutor the gameExecutor to set
+     */
+    public void setGameExecutor(String gameExecutor) {
+        this.gameExecutor = gameExecutor;
     }
 
     

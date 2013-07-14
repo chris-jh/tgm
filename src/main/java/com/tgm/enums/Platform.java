@@ -9,7 +9,7 @@ package com.tgm.enums;
  * @author christopher
  */
 public enum Platform {
-
+    PC,
     SEGA_32X,
     SEGA_CD,
     SEGA_GAME_GEAR,
