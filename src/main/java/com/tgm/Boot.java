@@ -33,8 +33,8 @@ public class Boot {
         context.registerShutdownHook();
 
         //Need to do this to solve @Transaction issues
-        KickStartInterface emu = (KickStartInterface) context.getBean("kickStarter");
-        emu.kickStart();
+        KickStartInterface kickStarter = (KickStartInterface) context.getBean("kickStarter");
+        kickStarter.kickStart();
 
         try {
             while (true) {

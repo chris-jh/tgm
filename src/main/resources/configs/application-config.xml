@@ -16,17 +16,12 @@
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     
-    <bean class="com.tgm.emu.EmuConfig" p:name="Sega MegaDrive" p:emuPath="/some/path/here">
+    <bean class="com.tgm.config.PlatformConfig" p:platform="SEGA_MEGA_DRIVE" p:emuPath="/some/path/here">
         <property name="romPath">
-            <list>
-                <value>/some/rom/path1</value>
-                <value>/some/rom/path2</value>
-                <value>/some/rom/path3</value>
+            <list value-type="com.tgm.resources.Path">
+                <bean class="com.tgm.resources.Path" p:protocol="SMB" p:path="//192.168.4.254/roms/SEGA/Roms\ GoodGen\ 3.0" p:username="test" p:password="test"/>
             </list>
         </property>
     </bean>
-    
-    <bean class="com.tgm.emu.EmuConfig" p:name="Nintendo Snes" p:emuPath="/some/path/here" p:romPath="/some/rom/path"/>
-    
-    
+        
 </beans>

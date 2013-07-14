@@ -4,50 +4,50 @@
  */
 package com.tgm.data.entity;
 
+import com.tgm.enums.Platform;
 import java.io.Serializable;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
-import org.apache.log4j.Logger;
 
 /**
  *
  * @author christopher
  */
 @Entity
-@Table(name = "emulator_game")
-public class EmulatorGame implements EntityInterface, Serializable {
+@Table(name = "platform")
+@NamedQueries({
+    @NamedQuery(name = "PlatformEntity.findByName", query = "SELECT a FROM PlatformEntity a WHERE a.name = :name")
+})
+public class PlatformEntity implements EntityInterface, Serializable {
 
-    public final static String table = "EmulatorGame"; 
-    
+    public final static String table = "Platform";
     @Id
     @Basic(optional = false)
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(insertable=false, updatable=false, unique = true, name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(insertable = false, updatable = false, unique = true, name = "id")
     private Integer id;
-    
     @Version
     private Integer version;
-    
+    @Enumerated(EnumType.STRING)
     @Column(name = "name", nullable = false)
-    private String name;
+    private Platform name;
+    @OneToMany(mappedBy = "platformRef", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    private Set<GameEntity> gameList;
 
-    @Column(name = "rom_location", nullable = false)
-    private String romLocation;
-    
-    @JoinColumn(name = "emulator_ref", referencedColumnName = "id")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY, cascade=CascadeType.REFRESH)
-    private Emulator emulatorRef;
-    
     /**
      * @return the id
      */
@@ -65,14 +65,14 @@ public class EmulatorGame implements EntityInterface, Serializable {
     /**
      * @return the name
      */
-    public String getName() {
+    public Platform getName() {
         return name;
     }
 
     /**
      * @param name the person to set
      */
-    public void setName(String name) {
+    public void setName(Platform name) {
         this.name = name;
     }
 
@@ -95,34 +95,22 @@ public class EmulatorGame implements EntityInterface, Serializable {
     }
 
     /**
-     * @return the romLocation
+     * @return the gameList
      */
-    public String getRomLocation() {
-        return romLocation;
+    public Set<GameEntity> getGameList() {
+        return gameList;
     }
 
     /**
-     * @param romLocation the romLocation to set
+     * @param emulatorGameList the gameList to set
      */
-    public void setRomLocation(String romLocation) {
-        this.romLocation = romLocation;
-    }
-
-    /**
-     * @return the emulatorRef
-     */
-    public Emulator getEmulatorRef() {
-        return emulatorRef;
-    }
-
-    /**
-     * @param emulatorRef the emulatorRef to set
-     */
-    public void setEmulatorRef(Emulator emulatorRef) {
-        this.emulatorRef = emulatorRef;
+    public void setGameList(Set<GameEntity> gameList) {
+        this.gameList = gameList;
     }
 
     public void fetch() {
-        this.getEmulatorRef().getId();
+        for (GameEntity game : gameList) {
+            game.fetch();
+        }
     }
 }

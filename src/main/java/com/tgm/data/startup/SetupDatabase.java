@@ -4,6 +4,7 @@
  */
 package com.tgm.data.startup;
 
+import com.tgm.utils.OSUtils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -11,7 +12,6 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,9 +25,9 @@ public class SetupDatabase implements InitializingBean {
     @Autowired
     private BasicDataSource dataSource;
     private JdbcTemplate jdbcTemplateObject;
-    @Value(value = "${tgm.path:~/.tgm}")
-    private String tmgPath;
     private final String script = "resources/sql/schema.sql";
+    @Autowired
+    private OSUtils osUtils;
 
     public void afterPropertiesSet() throws Exception {
         if (!checkExists()) {
@@ -35,20 +35,11 @@ public class SetupDatabase implements InitializingBean {
         }
     }
 
-    private String conv(String c) {
-        if (c.startsWith("~")) {
-            return System.getProperty("user.home") + c.substring(1);
-        } else {
-            return c;
-        }
-    }
-
     private boolean checkExists() {
-        String p = conv(tmgPath);
-        File f = new File(p + "/db/tgm-database.script");
+        File f = new File(osUtils.getAppHomePath() + "/db/tgm-database.script");
         try {
             if (!f.exists()) {
-                f = new File(p + "/db");
+                f = new File(osUtils.getAppHomePath() + "/db");
                 f.mkdirs();
                 return false;
             }
@@ -74,5 +65,12 @@ public class SetupDatabase implements InitializingBean {
         this.jdbcTemplateObject = null;
         rc = null;
         Logger.getLogger(this.getClass()).info("Generate Database...Done");
+    }
+
+    /**
+     * @param osUtils the osUtils to set
+     */
+    public void setOsUtils(OSUtils osUtils) {
+        this.osUtils = osUtils;
     }
 }

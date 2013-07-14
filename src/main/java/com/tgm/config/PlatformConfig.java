@@ -2,32 +2,29 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.tgm.emu;
+package com.tgm.config;
 
+import com.tgm.enums.Platform;
+import com.tgm.resources.Path;
+import com.tgm.resources.Path;
 import java.util.List;
+import org.springframework.util.Assert;
 
 /**
  *
  * @author christopher
  */
-public class EmuConfig {
-    private String name;
+public class PlatformConfig {
+    private Platform platform;
     private String emuPath;
     private String emuArgs;
-    private List<String> romPath;
-
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
+    private List<Path> romPath;
+    
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(platform);
+        Assert.notNull(emuPath);
+        Assert.notNull(emuArgs);
+        Assert.notNull(romPath);
     }
 
     /**
@@ -61,14 +58,29 @@ public class EmuConfig {
     /**
      * @return the romPath
      */
-    public List<String> getRomPath() {
+    public List<Path> getRomPath() {
         return romPath;
     }
 
     /**
      * @param romPath the romPath to set
      */
-    public void setRomPath(List<String> romPath) {
+    public void setRomPath(List<Path> romPath) {
         this.romPath = romPath;
     }
+
+    /**
+     * @return the platform
+     */
+    public Platform getPlatform() {
+        return platform;
+    }
+
+    /**
+     * @param platform the platform to set
+     */
+    public void setPlatform(Platform platform) {
+        this.platform = platform;
+    }
+
 }
