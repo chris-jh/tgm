@@ -4,7 +4,7 @@
  */
 package com.tgm.kickstarter;
 
-import com.tgm.App;
+import com.tgm.graphics.App;
 import com.tgm.scanner.PlatformScanner;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +20,7 @@ public class KickStarter implements KickStartInterface {
     @Autowired
     private App app;
 
+    @Override
     public void kickStart() {
         Logger.getLogger(this.getClass()).info("Kickstarting...");
         //platformScanner.scan();//TODO: Move so scanning takes place from App GUI
