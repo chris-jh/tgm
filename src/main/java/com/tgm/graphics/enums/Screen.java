@@ -2,13 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.tgm.enums;
+package com.tgm.graphics.enums;
 
 /**
  *
  * @author christopher
  */
-public enum SceneEnum {
+public enum Screen {
     MAIN,
     SCAN_FOR_GAMES,
     NEXT
