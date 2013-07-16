@@ -24,11 +24,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jsfml</groupId>
-            <artifactId>jsfml</artifactId>
-            <version>2.0.160613</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${spring.version}</version>
@@ -151,13 +146,23 @@
             <version>2.4</version>
         </dependency>
         <dependency>
-            <groupId>org.jvnet.jaxb2.maven2</groupId>
-            <artifactId>maven-jaxb2-plugin</artifactId>
-            <version>0.2</version>
+            <groupId>org.lwjgl.lwjgl</groupId>
+            <artifactId>lwjgl</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.mavennatives</groupId>
+            <artifactId>maven-nativedependencies-plugin</artifactId>
+            <version>0.0.7</version>
+        </dependency>
+        <dependency>
+            <groupId>slick</groupId>
+            <artifactId>slick</artifactId>
+            <version>239</version>
         </dependency>
     </dependencies>
     
-    <profiles>
+    <!--<profiles>
         <profile>
             <id>mac_profile</id>
             <activation>
@@ -173,7 +178,7 @@
                 </dependency>
             </dependencies>
         </profile>
-    </profiles>
+    </profiles>-->
     
     <build>
         
@@ -283,13 +288,33 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
+            
+            <plugin>
+                <groupId>com.googlecode.mavennatives</groupId>
+                <artifactId>maven-nativedependencies-plugin</artifactId>
+                <version>0.0.5</version>
+                <executions>
+                    <execution>
+                        <id>unpacknatives</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
     
     <repositories>
-        <repository>
+        <!--<repository>
             <id>repo</id>
             <url>file://${project.basedir}/repo</url>
+        </repository>-->
+        <repository>
+            <id>nifty-maven-repo.sourceforge.net</id>
+            <url>http://nifty-gui.sourceforge.net/nifty-maven-repo</url>
         </repository>
     </repositories>
     

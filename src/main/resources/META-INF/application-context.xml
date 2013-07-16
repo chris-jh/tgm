@@ -59,16 +59,13 @@
     
     <task:annotation-driven executor="mainExecutor" />
 
-    <util:map id="scenes" key-type="com.tgm.enums.SceneEnum">
+    <util:map id="screens" key-type="com.tgm.graphics.enums.Screen">
         <entry key="MAIN">
-            <bean class="com.tgm.scene.MainScene"/>
-        </entry>
-        <entry key="SCAN_FOR_GAMES">
-            <bean class="com.tgm.scene.ScanForGamesScene"/>
+            <bean class="com.tgm.graphics.screens.MainScreen"/>
         </entry>
     </util:map>
     
-    <bean id="app" class="com.tgm.App" p:taskExecutor-ref="mainExecutor" p:scenes-ref="scenes"/>
+    <bean id="app" class="com.tgm.graphics.App" p:taskExecutor-ref="mainExecutor" p:screens-ref="screens"/>
     
     <bean id="platformScanner" class="com.tgm.scanner.PlatformScanner"/>
 
