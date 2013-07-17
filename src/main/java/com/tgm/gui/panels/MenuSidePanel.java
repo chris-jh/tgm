@@ -2,22 +2,26 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.tgm.graphics.extra;
+package com.tgm.gui.panels;
 
 import com.tgm.enums.Platform;
-import com.tgm.graphics.enums.Screen;
-import com.tgm.graphics.interfaces.AppInterface;
-import com.tgm.graphics.slick.Label;
+import com.tgm.gui.enums.Screen;
+import com.tgm.gui.interfaces.AppInterface;
+import com.tgm.gui.interfaces.PanelInterface;
+import com.tgm.gui.slick.Label;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 import org.newdawn.slick.Color;
-import org.newdawn.slick.Game;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.ShapeFill;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.fills.GradientFill;
 import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.geom.Rectangle;
@@ -26,9 +30,9 @@ import org.newdawn.slick.geom.Rectangle;
  *
  * @author christopher
  */
-public class MenuExtra implements Game {
+public class MenuSidePanel implements PanelInterface {
 
-    private String menuTitle;
+    private Label menuTitle;
     private float textSpinSpeed = 0.002f;
     private float textScaleValue = 1.0f;
     private boolean pause = false;
@@ -58,7 +62,8 @@ public class MenuExtra implements Game {
     }
 
     private void initTitle() {
-        menuTitle = "The Games Menu";
+        menuTitle = new Label("The Games Menu", 10, 10);
+        menuTitle.setFont(new Font("Arial", Font.BOLD, 22));
     }
 
     private void initMenu() throws Exception {
@@ -67,7 +72,8 @@ public class MenuExtra implements Game {
         menu.add(createText("Scan For Games", h));
         for (Platform platform : Platform.values()) {
             h += insert;
-            menu.add(createText(platform.name(), h)); //Needs Formatting
+
+            menu.add(createText(WordUtils.capitalize(StringUtils.replace(platform.name(), "_", " ").toLowerCase()), h)); //Needs Formatting
         }
         h += insert;
         menu.add(createText("Quit", h));
@@ -100,7 +106,9 @@ public class MenuExtra implements Game {
     }
 
     private Label createText(String text, int h) {
-        return new Label(text, margin, h);
+        Label l = new Label(text, margin, h);
+        l.setFont(new Font("Arial", Font.BOLD, 16));
+        return l;
     }
 
     private void updateTitle() {
@@ -174,7 +182,10 @@ public class MenuExtra implements Game {
     }
 
     private void renderTitle(Graphics g) {
-        g.drawString(menuTitle, 5, 10);
+        if (menuTitle.getTrueTypeFont() != null) {
+            menuTitle.getTrueTypeFont().drawString(menuTitle.getX(), menuTitle.getY(), menuTitle.getText());
+        }
+        //g.drawString(menuTitle, 5, 10);
     }
 
     private void renderMenu(Graphics g) {
@@ -189,7 +200,13 @@ public class MenuExtra implements Game {
 
         for (int i = 0; i < maxNumberMenuItemsDisplayed; i++) {
             if (i + menuDisplayedIndex < menu.size()) {
-                g.drawString(menu.get(i + menuDisplayedIndex).getText(), menu.get(i + menuDisplayedIndex).getX(), menu.get(i + menuDisplayedIndex).getY());
+                Label l = menu.get(i + menuDisplayedIndex);
+                if (l.getTrueTypeFont() != null) {
+                    l.getTrueTypeFont().drawString(l.getX(), l.getY(), l.getText());
+                } else {
+                    g.drawString(l.getText(), l.getX(), l.getY());
+                }
+                //g.drawString(menu.get(i + menuDisplayedIndex).getText(), menu.get(i + menuDisplayedIndex).getX(), menu.get(i + menuDisplayedIndex).getY());
             }
         }
 
@@ -216,6 +233,14 @@ public class MenuExtra implements Game {
         menuSelectionBackgroundUp = new Circle(5, menuSelectionPosition - 5, 10);
         menuSelectionBackgroundDown = new Circle(5, menuSelectionPosition - 5, 10);
 
+        menuTitle.setTrueTypeFont(new TrueTypeFont(menuTitle.getFont(), true));
+
+
+        for (Label label : menu) {
+            if (label.getFont() != null) {
+                label.setTrueTypeFont(new TrueTypeFont(label.getFont(), true));;
+            }
+        }
     }
 
     @Override
@@ -239,15 +264,5 @@ public class MenuExtra implements Game {
     public void render(GameContainer gc, Graphics grphcs) throws SlickException {
         renderTitle(grphcs);
         renderMenu(grphcs);
-    }
-
-    @Override
-    public boolean closeRequested() {
-        return false;
-    }
-
-    @Override
-    public String getTitle() {
-        return "MENU";
     }
 }

@@ -2,9 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.tgm.graphics.interfaces;
+package com.tgm.gui.interfaces;
 
-import com.tgm.graphics.enums.Screen;
+import com.tgm.gui.enums.Screen;
 
 /**
  *

@@ -2,12 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.tgm.graphics.lib;
+package com.tgm.gui.lib;
 
-import com.tgm.graphics.App;
-import com.tgm.graphics.enums.Screen;
-import com.tgm.graphics.interfaces.ScreenInterface;
-import com.tgm.graphics.utils.ScreenUtils;
+import com.tgm.gui.App;
+import com.tgm.gui.enums.Screen;
+import com.tgm.gui.interfaces.ScreenInterface;
+import com.tgm.gui.utils.ScreenUtils;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Logger;

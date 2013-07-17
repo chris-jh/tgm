@@ -1,10 +1,10 @@
-package com.tgm.graphics;
+package com.tgm.gui;
 
-import com.tgm.graphics.enums.Screen;
-import com.tgm.graphics.extra.MenuExtra;
-import com.tgm.graphics.interfaces.AppInterface;
-import com.tgm.graphics.interfaces.ScreenInterface;
-import com.tgm.graphics.lib.Engine;
+import com.tgm.gui.enums.Screen;
+import com.tgm.gui.panels.MenuSidePanel;
+import com.tgm.gui.interfaces.AppInterface;
+import com.tgm.gui.interfaces.ScreenInterface;
+import com.tgm.gui.lib.Engine;
 import com.tgm.utils.OSUtils;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +33,7 @@ public class App implements AppInterface, Runnable {
     private TaskExecutor taskExecutor;
     private boolean running = true;
     private ConcurrentLinkedQueue<Screen> screenQueue = new ConcurrentLinkedQueue<Screen>();
-    public static final MenuExtra menu = new MenuExtra();
+    public static final MenuSidePanel menu = new MenuSidePanel();
     AppGameContainer appGameContainer;
     Engine engine;
     ScreenInterface screen = null;
@@ -65,10 +65,11 @@ public class App implements AppInterface, Runnable {
             engine = new Engine(title);
             engine.setScreens(screens);
             appGameContainer = new AppGameContainer(engine);
-            appGameContainer.setFullscreen(true);
-            appGameContainer.setDisplayMode(width, height, false);
+            appGameContainer.setShowFPS(false);
+            //appGameContainer.setFullscreen(true);
+            appGameContainer.setDisplayMode(width, height, fullscreen);
             Logger.getLogger(this.getClass()).info("Display: " + width + "x" + height + " F:" + fullscreen);
-            if (!fullscreen) {
+            /*if (!fullscreen) {
                 appGameContainer.setDisplayMode(width, height, false);
             } else {
                 if (!OSUtils.isMac()) {
@@ -76,7 +77,7 @@ public class App implements AppInterface, Runnable {
                 } else {
                     appGameContainer.setFullscreen(true);
                 }
-            }
+            }*/
 
         } catch (Exception e) {
             Logger.getLogger(this.getClass()).fatal(e);
@@ -200,12 +201,12 @@ public class App implements AppInterface, Runnable {
 
     @Override
     public int getWidth() {
-        return appGameContainer.getScreenWidth();
+        return appGameContainer.getWidth();
     }
 
     @Override
     public int getHeight() {
-        return appGameContainer.getScreenHeight();
+        return appGameContainer.getHeight();
     }
 
     @Override
