@@ -4,7 +4,7 @@
  */
 package com.tgm.kickstarter;
 
-import com.tgm.graphics.App;
+import com.tgm.gui.App;
 import com.tgm.scanner.PlatformScanner;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

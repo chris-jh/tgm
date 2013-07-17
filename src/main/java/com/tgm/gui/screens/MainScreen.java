@@ -2,9 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.tgm.graphics.screens;
+package com.tgm.gui.screens;
 
-import com.tgm.graphics.App;
+import com.tgm.gui.App;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;

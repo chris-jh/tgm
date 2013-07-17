@@ -2,12 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.tgm.graphics.screens;
+package com.tgm.gui.screens;
 
-import com.tgm.graphics.enums.Screen;
-import com.tgm.graphics.interfaces.AppInterface;
-import com.tgm.graphics.interfaces.ScreenInterface;
-import com.tgm.graphics.utils.ScreenUtils;
+import com.tgm.gui.enums.Screen;
+import com.tgm.gui.interfaces.AppInterface;
+import com.tgm.gui.interfaces.ScreenInterface;
+import com.tgm.gui.utils.ScreenUtils;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
@@ -30,6 +30,8 @@ public abstract class AbstractScreen implements ScreenInterface {
 
     public void drawBackground() {
         background.draw(1, 1, appInterface.getWidth(), appInterface.getHeight());
+        //background.draw(1, 1, 800, 600);
+    
     }
 
     protected void quit() {
