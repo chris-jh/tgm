@@ -48,14 +48,18 @@ public class App implements AppInterface, Runnable {
     }
 
     private void initApp() throws Exception {
+        initDisplay();
         initScreens();
         initExtra();
-        initDisplay();
     }
 
     private void initExtra() throws Exception {
         Logger.getLogger(this.getClass()).info("APP INIT EXTRA");
-        menu.initMenu(this);
+        menu.setAppInterface(this);
+        menu.setLocation(0, 0);
+        menu.setSize(this.getWidth() / 4.1f, this.getHeight());
+        Logger.getLogger(this.getClass()).info("APP INIT EXTRA Done");
+
     }
 
     private void initDisplay() {
@@ -63,21 +67,20 @@ public class App implements AppInterface, Runnable {
 
         try {
             engine = new Engine(title);
-            engine.setScreens(screens);
             appGameContainer = new AppGameContainer(engine);
             appGameContainer.setShowFPS(false);
             //appGameContainer.setFullscreen(true);
             appGameContainer.setDisplayMode(width, height, fullscreen);
             Logger.getLogger(this.getClass()).info("Display: " + width + "x" + height + " F:" + fullscreen);
             /*if (!fullscreen) {
-                appGameContainer.setDisplayMode(width, height, false);
-            } else {
-                if (!OSUtils.isMac()) {
-                    appGameContainer.setDisplayMode(width, height, true);
-                } else {
-                    appGameContainer.setFullscreen(true);
-                }
-            }*/
+             appGameContainer.setDisplayMode(width, height, false);
+             } else {
+             if (!OSUtils.isMac()) {
+             appGameContainer.setDisplayMode(width, height, true);
+             } else {
+             appGameContainer.setFullscreen(true);
+             }
+             }*/
 
         } catch (Exception e) {
             Logger.getLogger(this.getClass()).fatal(e);
@@ -100,6 +103,7 @@ public class App implements AppInterface, Runnable {
             Logger.getLogger(this.getClass()).fatal("Error Initialsing Screens", e);
             System.exit(0);
         }
+        engine.setScreens(screens);
     }
 
     private void play() throws SlickException {
