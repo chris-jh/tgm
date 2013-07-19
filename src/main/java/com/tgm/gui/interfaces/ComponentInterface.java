@@ -55,4 +55,9 @@ public interface ComponentInterface {
     public void setVisable(boolean visible);
     
     public boolean isVisiable();
+
+    public void setSx(float sx);
+    
+    public void setSy(float sy);
+
 }

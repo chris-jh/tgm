@@ -17,18 +17,18 @@ import org.newdawn.slick.TrueTypeFont;
  */
 public class Label extends AbstractComponent {
 
-    public final static int LEFT=0;
-    public final static int RIGHT=1;
-    public final static int CENTER=2;
-    
-    
+    public final static int LEFT = 0;
+    public final static int RIGHT = 1;
+    public final static int CENTER = 2;
     private String text = "";
     private TrueTypeFont trueTypeFont;
+    //private TrueTypeFont trueTypeFontShadow;
     private Font font = new Font("Arial", Font.PLAIN, 14);
     private boolean update = false;
     private Color colour = Color.black;
     private int align = 0;
     private float offset = 0;
+    private boolean shadow = false;
 
     public Label(String id, String text, float x, float y) {
         this.id = id;
@@ -45,6 +45,16 @@ public class Label extends AbstractComponent {
         this.colour = colour;
         font = new Font(fontName, fontStyle, fontSize);
     }
+    
+    public Label(String id, String text, float x, float y, String fontName, int fontStyle, int fontSize, Color colour, boolean shadow) {
+        this.id = id;
+        this.text = text;
+        this.x = x;
+        this.y = y;
+        this.colour = colour;
+        this.shadow = shadow;
+        font = new Font(fontName, fontStyle, fontSize);
+    }
 
     public Label(String id, String text, float x, float y, float w, float h, int align, String fontName, int fontStyle, int fontSize, Color colour) {
         this.id = id;
@@ -55,6 +65,19 @@ public class Label extends AbstractComponent {
         this.height = h;
         this.colour = colour;
         this.align = align;
+        font = new Font(fontName, fontStyle, fontSize);
+    }
+    
+    public Label(String id, String text, float x, float y, float w, float h, int align, String fontName, int fontStyle, int fontSize, Color colour, boolean shadow) {
+        this.id = id;
+        this.text = text;
+        this.x = x;
+        this.y = y;
+        this.width = w;
+        this.height = h;
+        this.colour = colour;
+        this.align = align;
+        this.shadow = shadow;
         font = new Font(fontName, fontStyle, fontSize);
     }
 
@@ -83,6 +106,7 @@ public class Label extends AbstractComponent {
     @Override
     public void init(GameContainer gc) throws SlickException {
         trueTypeFont = new TrueTypeFont(font, true);
+
         initialised = true;
     }
     boolean fp = true;
@@ -108,7 +132,19 @@ public class Label extends AbstractComponent {
     @Override
     public void render(GameContainer gc, Graphics g) throws SlickException {
         if (visible) {
-            trueTypeFont.drawString(getX()+offset, getY(), getText(), colour);
+//            float ff = 0.0f;
+//            if (sx >= 0.0){
+//                ff = (getWidth() - Math.abs(getWidth() * sx)) /2;
+//            } else if (sx < 0.0){
+//                ff = ((getWidth() - (getWidth() * sx)) /2) - offset;
+//            }
+//            g.translate(x+offset+ff, y);
+//            g.scale(sx, sy);
+            if (shadow) {
+                trueTypeFont.drawString(x + offset + 3, y + 3, getText(), Color.black);
+            }
+            trueTypeFont.drawString(x + offset, y, getText(), colour);
+//            g.resetTransform();
         }
     }
 
