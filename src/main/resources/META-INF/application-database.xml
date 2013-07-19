@@ -26,10 +26,6 @@
     
     <bean id="setupDatabase" class="com.tgm.data.startup.SetupDatabase" depends-on="embeddedDatasource"/>
     
-<!--    <jdbc:initialize-database data-source="embeddedDatasource">
-        <jdbc:script location="classpath:resources/sql/schema.sql"/>
-    </jdbc:initialize-database>-->
-    
     <bean id="sessionFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="setupDatabase">
         <property name="dataSource" ref="embeddedDatasource" />
         <property name="persistenceXmlLocation" value="classpath*:META-INF/persistence.xml"/>
@@ -46,6 +42,6 @@
         <property name="entityManagerFactory" ref="sessionFactory" />
     </bean>
         
-    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <tx:annotation-driven transaction-manager="transactionManager" />
         
 </beans>

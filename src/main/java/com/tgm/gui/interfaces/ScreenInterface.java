@@ -4,6 +4,7 @@
  */
 package com.tgm.gui.interfaces;
 
+import com.tgm.gui.enums.Command;
 import com.tgm.gui.enums.Screen;
 import org.newdawn.slick.Game;
 
@@ -20,5 +21,7 @@ public interface ScreenInterface extends Game{
     public void reset();
 
     public void updateNextScene(Screen scene);
+    
+    public void command(Command command);
     
 }

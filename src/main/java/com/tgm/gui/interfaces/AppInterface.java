@@ -12,6 +12,7 @@ import com.tgm.gui.enums.Screen;
  */
 public interface AppInterface {
         
+    public void init() throws Exception;
     public void processNextScreen(Screen scene);
     public void quit();
     

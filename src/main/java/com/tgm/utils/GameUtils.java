@@ -6,6 +6,7 @@ package com.tgm.utils;
 
 import com.tgm.enums.Platform;
 import com.tgm.scanner.PlatformScanner;
+import com.tgm.interfaces.PlatformScannerInterface;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -19,8 +20,10 @@ import org.springframework.scheduling.annotation.Async;
  */
 public class GameUtils {
 
+    private static int counter = 0;
+    
     @Async
-    public static void processGameFiles(PlatformScanner scanner, Platform platform, String mountedPath, final String[] filterExt, boolean mounted) throws Exception {
+    public static void processGameFiles(PlatformScannerInterface scanner, Platform platform, String mountedPath, final String[] filterExt, boolean mounted) throws Exception {
         DirectoryStream<java.nio.file.Path> stream = null;
         File f;
         Path dir;
@@ -48,6 +51,13 @@ public class GameUtils {
             dir = f.toPath();
             stream = Files.newDirectoryStream(dir, filter);
             for (Path file : stream) {
+                counter++;
+                if (counter > 10){
+                    return;
+                }    
+                if (!scanner.isScanning()){
+                    return;
+                }
                 if (file.toFile().isDirectory()) {
                     processGameFiles(scanner, platform, file.toString(), filterExt, mounted);
                 } else {
@@ -57,6 +67,7 @@ public class GameUtils {
                     } else {
                         ff = file.toString();
                     }
+                    
                     scanner.processGame(platform, file.getFileName().toString(), ff);
                 }
                 try {

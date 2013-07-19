@@ -4,7 +4,7 @@
  */
 package com.tgm;
 
-import com.tgm.kickstarter.KickStartInterface;
+import com.tgm.interfaces.KickStartInterface;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -13,6 +13,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author christopher
  */
 public class Boot {
+
+    private static ClassPathXmlApplicationContext context;
 
     public static void main(String[] args) {
         String config = "classpath:/META-INF/application-context.xml";
@@ -29,20 +31,27 @@ public class Boot {
             System.out.println("Use Default Config...");
         }
 
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(config);
+        context = new ClassPathXmlApplicationContext(config);
         context.registerShutdownHook();
 
-        //Need to do this to solve @Transaction issues
-        KickStartInterface kickStarter = (KickStartInterface) context.getBean("kickStarter");
-        kickStarter.kickStart();
-
-        try {
+        /*try {
             while (true) {
                 Thread.sleep(5000);
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
+    }
+
+    public static void exit(int exit) {
+        if (context != null) {
+            try {
+                context.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        System.exit(exit);
     }
 }

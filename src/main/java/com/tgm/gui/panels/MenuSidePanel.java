@@ -5,10 +5,10 @@
 package com.tgm.gui.panels;
 
 import com.tgm.enums.Platform;
-import com.tgm.gui.enums.Screen;
 import com.tgm.gui.components.Label;
 import com.tgm.gui.components.Panel;
 import com.tgm.gui.components.Shape;
+import com.tgm.gui.enums.Command;
 import java.awt.Font;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
@@ -17,13 +17,14 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-
+import org.springframework.stereotype.Component;
 /**
  *
  * @author christopher
  */
+@Component
 public class MenuSidePanel extends Panel {
-
+    
     private float textSpinSpeed = 0.002f;
     private float textScaleValue = 1.0f;
     private boolean pause = false;
@@ -170,9 +171,9 @@ public class MenuSidePanel extends Panel {
     private void menuSelected() {
         int quitIndex = menuSize - 1;
         if (menuSelectionIndex == 0) {
-            appInterface.getCurrentScreenInterface().updateNextScene(Screen.SCAN_FOR_GAMES);
+            parentScreen.command(Command.SCAN_FOR_GAMES);
         } else if (menuSelectionIndex == quitIndex) {
-            appInterface.quit();
+            parentScreen.command(Command.QUIT);
         }
     }
 }
