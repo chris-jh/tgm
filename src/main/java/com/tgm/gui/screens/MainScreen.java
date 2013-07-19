@@ -5,6 +5,7 @@
 package com.tgm.gui.screens;
 
 import com.tgm.Boot;
+import com.tgm.gui.components.Panel;
 import com.tgm.gui.enums.Command;
 import com.tgm.gui.panels.MenuSidePanel;
 import com.tgm.interfaces.ScannerInterface;
@@ -25,6 +26,8 @@ public class MainScreen extends AbstractScreen {
     @Autowired
     private ScannerInterface scanner;
 
+    private Panel mainPanel;
+    
     {
         screenName = "Main Scene";
     }
@@ -33,26 +36,29 @@ public class MainScreen extends AbstractScreen {
     public void configure() {
         menu.setAppInterface(appInterface);
         menu.setParentScreen(this);
-        menu.setSize(appInterface.getWidth() / 4.1f, appInterface.getHeight());
+        menu.setSize(appInterface.getWidth() / 3.69f, appInterface.getHeight());
+        menu.setBackground("images/menu_background.png");
+        menu.setLocation(0, 0);
+        
+        mainPanel = new Panel("mainPanel", 0, 0, appInterface.getWidth(), appInterface.getHeight(), "images/background_white.png");
+        mainPanel.setParentScreen(this);
+        mainPanel.setAppInterface(appInterface);
+        mainPanel.add(menu);
     }
 
     @Override
     public void init(GameContainer gc) throws SlickException {
-        if (!menu.isInitialised()) {
-            menu.init(gc);
-        }
-        initBackground();
+        mainPanel.init(gc);
     }
 
     @Override
     public void update(GameContainer gc, int i) throws SlickException {
-        menu.update(gc, i);
+        mainPanel.update(gc, i);
     }
 
     @Override
     public void render(GameContainer gc, Graphics grphcs) throws SlickException {
-        drawBackground();
-        menu.render(gc, grphcs);
+        mainPanel.render(gc, grphcs);
     }
 
     @Override

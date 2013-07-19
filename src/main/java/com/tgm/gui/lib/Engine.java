@@ -4,17 +4,14 @@
  */
 package com.tgm.gui.lib;
 
-import com.tgm.gui.App;
 import com.tgm.gui.enums.Screen;
 import com.tgm.gui.interfaces.ScreenInterface;
-import com.tgm.gui.utils.ScreenUtils;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 

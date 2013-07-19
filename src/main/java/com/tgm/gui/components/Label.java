@@ -5,6 +5,7 @@
 package com.tgm.gui.components;
 
 import java.awt.Font;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -16,10 +17,18 @@ import org.newdawn.slick.TrueTypeFont;
  */
 public class Label extends AbstractComponent {
 
+    public final static int LEFT=0;
+    public final static int RIGHT=1;
+    public final static int CENTER=2;
+    
+    
     private String text = "";
     private TrueTypeFont trueTypeFont;
     private Font font = new Font("Arial", Font.PLAIN, 14);
     private boolean update = false;
+    private Color colour = Color.black;
+    private int align = 0;
+    private float offset = 0;
 
     public Label(String id, String text, float x, float y) {
         this.id = id;
@@ -28,11 +37,24 @@ public class Label extends AbstractComponent {
         this.y = y;
     }
 
-    public Label(String id, String text, float x, float y, String fontName, int fontStyle, int fontSize) {
+    public Label(String id, String text, float x, float y, String fontName, int fontStyle, int fontSize, Color colour) {
         this.id = id;
         this.text = text;
         this.x = x;
         this.y = y;
+        this.colour = colour;
+        font = new Font(fontName, fontStyle, fontSize);
+    }
+
+    public Label(String id, String text, float x, float y, float w, float h, int align, String fontName, int fontStyle, int fontSize, Color colour) {
+        this.id = id;
+        this.text = text;
+        this.x = x;
+        this.y = y;
+        this.width = w;
+        this.height = h;
+        this.colour = colour;
+        this.align = align;
         font = new Font(fontName, fontStyle, fontSize);
     }
 
@@ -63,6 +85,7 @@ public class Label extends AbstractComponent {
         trueTypeFont = new TrueTypeFont(font, true);
         initialised = true;
     }
+    boolean fp = true;
 
     @Override
     public void update(GameContainer gc, int i) throws SlickException {
@@ -70,12 +93,50 @@ public class Label extends AbstractComponent {
             update = false;
             trueTypeFont = new TrueTypeFont(font, true);
         }
+
+        if (fp) {
+            if (align == CENTER) {
+                offset = (getWidth() - getTextWidth()) / 2f;
+            }
+            if (align == RIGHT) {
+                offset = (getWidth() - getTextWidth());
+            }
+            fp = false;
+        }
     }
 
     @Override
     public void render(GameContainer gc, Graphics g) throws SlickException {
         if (visible) {
-            trueTypeFont.drawString(getX(), getY(), getText());
+            trueTypeFont.drawString(getX()+offset, getY(), getText(), colour);
         }
+    }
+
+    public float getTextWidth() {
+        if (initialised) {
+            return trueTypeFont.getWidth(getText());
+        }
+        return 0;
+    }
+
+    public float getTextHeight() {
+        if (initialised) {
+            return trueTypeFont.getHeight(getText());
+        }
+        return 0;
+    }
+
+    /**
+     * @param color the color to set
+     */
+    public void setColour(Color colour) {
+        this.colour = colour;
+    }
+
+    /**
+     * @return the colour
+     */
+    public Color getColour() {
+        return colour;
     }
 }
