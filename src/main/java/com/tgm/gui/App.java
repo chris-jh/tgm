@@ -1,11 +1,9 @@
 package com.tgm.gui;
 
 import com.tgm.gui.enums.Screen;
-import com.tgm.gui.panels.MenuSidePanel;
 import com.tgm.gui.interfaces.AppInterface;
 import com.tgm.gui.interfaces.ScreenInterface;
 import com.tgm.gui.lib.Engine;
-import com.tgm.utils.OSUtils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -33,7 +31,6 @@ public class App implements AppInterface, Runnable {
     private TaskExecutor taskExecutor;
     private boolean running = true;
     private ConcurrentLinkedQueue<Screen> screenQueue = new ConcurrentLinkedQueue<Screen>();
-    public static final MenuSidePanel menu = new MenuSidePanel();
     AppGameContainer appGameContainer;
     Engine engine;
     ScreenInterface screen = null;
@@ -41,6 +38,8 @@ public class App implements AppInterface, Runnable {
     public App() {
     }
 
+    @Override
+    @Async
     public void init() throws Exception {
         Logger.getLogger(this.getClass()).info("APP INIT");
         initApp();
@@ -50,17 +49,17 @@ public class App implements AppInterface, Runnable {
     private void initApp() throws Exception {
         initDisplay();
         initScreens();
-        initExtra();
+        //initExtra();
     }
 
-    private void initExtra() throws Exception {
+    /*private void initExtra() throws Exception {
         Logger.getLogger(this.getClass()).info("APP INIT EXTRA");
         menu.setAppInterface(this);
         menu.setLocation(0, 0);
         menu.setSize(this.getWidth() / 4.1f, this.getHeight());
         Logger.getLogger(this.getClass()).info("APP INIT EXTRA Done");
 
-    }
+    }*/
 
     private void initDisplay() {
         Logger.getLogger(this.getClass()).info("APP INIT ENGINE");
@@ -98,6 +97,7 @@ public class App implements AppInterface, Runnable {
         try {
             for (Map.Entry<Screen, ScreenInterface> entry : screens.entrySet()) {
                 entry.getValue().setAppInterface(this);
+                entry.getValue().configure();
             }
         } catch (Exception e) {
             Logger.getLogger(this.getClass()).fatal("Error Initialsing Screens", e);

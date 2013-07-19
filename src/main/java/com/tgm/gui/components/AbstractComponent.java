@@ -6,6 +6,7 @@ package com.tgm.gui.components;
 
 import com.tgm.gui.interfaces.AppInterface;
 import com.tgm.gui.interfaces.ComponentInterface;
+import com.tgm.gui.interfaces.ScreenInterface;
 
 /**
  *
@@ -20,6 +21,7 @@ public abstract class AbstractComponent implements ComponentInterface {
     protected float height = 0;
     protected boolean initialised = false;
     protected ComponentInterface parentComponent;
+    protected ScreenInterface parentScreen;
     protected AppInterface appInterface;
     protected boolean visible = true;
 
@@ -115,14 +117,19 @@ public abstract class AbstractComponent implements ComponentInterface {
     public void setAppInterface(AppInterface appInterface) {
         this.appInterface = appInterface;
     }
-    
+
     @Override
-    public void setVisable(boolean visible){
-        this.visible =visible;
+    public void setVisable(boolean visible) {
+        this.visible = visible;
     }
-    
+
     @Override
-    public boolean isVisiable(){
+    public boolean isVisiable() {
         return this.visible;
+    }
+
+    @Override
+    public void setParentScreen(ScreenInterface screenInterface) {
+        this.parentScreen = screenInterface;
     }
 }

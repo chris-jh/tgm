@@ -4,9 +4,9 @@
  */
 package com.tgm.kickstarter;
 
-import com.tgm.gui.App;
-import com.tgm.scanner.PlatformScanner;
-import org.apache.log4j.Logger;
+import com.tgm.interfaces.KickStartInterface;
+import com.tgm.gui.interfaces.AppInterface;
+import com.tgm.interfaces.ScannerInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -16,40 +16,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class KickStarter implements KickStartInterface {
 
     @Autowired
-    private PlatformScanner platformScanner;
+    private AppInterface appInterface;
+
     @Autowired
-    private App app;
+    private ScannerInterface scanner;
 
     @Override
     public void kickStart() {
-        Logger.getLogger(this.getClass()).info("Kickstarting...");
-        //platformScanner.scan();//TODO: Move so scanning takes place from App GUI
-
         try {
-            app.init();
+            //scanner.scan();
+            appInterface.init();
         } catch (Exception e) {
-            Logger.getLogger(this.getClass()).fatal(e);
         }
     }
 
     /**
-     * @param PlatformScanner the platformScanner to set
+     * @param appInterface the appInterface to set
      */
-    public void setPlatformScanner(PlatformScanner platformScanner) {
-        this.platformScanner = platformScanner;
+    public void setAppInterface(AppInterface appInterface) {
+        this.appInterface = appInterface;
     }
 
     /**
-     * @return the app
+     * @param scanner the scanner to set
      */
-    public App getApp() {
-        return app;
-    }
-
-    /**
-     * @param app the app to set
-     */
-    public void setApp(App app) {
-        this.app = app;
+    public void setScanner(ScannerInterface scanner) {
+        this.scanner = scanner;
     }
 }

@@ -47,7 +47,6 @@ public class Engine extends BasicGame {
             Logger.getLogger(this.getClass()).info("INIT ENGINE SCREEN: " + entry.getValue().getTitle());
             entry.getValue().init(gc);
         }
-        App.menu.init(gc);
     }
 
     @Override

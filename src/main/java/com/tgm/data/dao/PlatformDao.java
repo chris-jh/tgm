@@ -4,6 +4,7 @@
  */
 package com.tgm.data.dao;
 
+import com.tgm.data.interfaces.PlatformDaoInterface;
 import com.tgm.data.entity.PlatformEntity;
 import com.tgm.enums.Platform;
 import javax.persistence.NoResultException;
@@ -15,14 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
  * @author christopher
  */
 @Repository("platformDao")
-public class PlatformDao extends AbstractDao<PlatformEntity, Integer> {
+public class PlatformDao<E,I> extends AbstractDao<PlatformEntity, Integer> implements PlatformDaoInterface<E, I> {
  
-    protected PlatformDao() {
+    public PlatformDao() {
         super(PlatformEntity.class);
     }
  
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, noRollbackFor = NoResultException.class)
+    @Override
     public PlatformEntity findPlatformByName(Platform name) throws NoResultException {
-        return (PlatformEntity)getEntityManager().createNamedQuery("PlatformEntity.findByName").setParameter("name", name).getSingleResult();
+        return (PlatformEntity)entityManager.createNamedQuery("PlatformEntity.findByName").setParameter("name", name).getSingleResult();
     }
 }

@@ -65,10 +65,16 @@
         </entry>
     </util:map>
     
+    <bean class="com.tgm.spring.TGMPostProcessor" />
+        
+    <bean class="com.tgm.spring.TGMApplicationListener" />
+    
     <bean id="app" class="com.tgm.gui.App" p:taskExecutor-ref="mainExecutor" p:screens-ref="screens"/>
     
     <bean id="platformScanner" class="com.tgm.scanner.PlatformScanner"/>
 
+    <bean id="scanner" class="com.tgm.scanner.Scanner"/>
+    
     <bean id="kickStarter" class="com.tgm.kickstarter.KickStarter"/>
     
     

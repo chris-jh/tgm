@@ -5,14 +5,17 @@
 package com.tgm.data.dao;
 
 import com.tgm.data.entity.EntityInterface;
+import com.tgm.data.interfaces.DaoInterface;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataAccessException;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -20,16 +23,16 @@ import org.springframework.util.Assert;
  *
  * @author christopher
  */
-public abstract class AbstractDao<E extends EntityInterface, I extends Serializable> {
+public abstract class AbstractDao<E extends EntityInterface, I extends Serializable> implements DaoInterface<E, I> {
 
     private Class<E> entityClass;
     private EntityInterface entityInterface;
-    private EntityManager entityManager;
+    protected EntityManager entityManager;
     @Autowired
-    private ApplicationContext applicationContext;
+    protected ApplicationContext applicationContext;
     private String findAllQuery;
 
-    protected AbstractDao(Class<E> entityClass) {
+    public AbstractDao(Class<E> entityClass) {
         Assert.isAssignable(EntityInterface.class, entityClass);
         this.entityClass = entityClass;
     }
@@ -44,37 +47,45 @@ public abstract class AbstractDao<E extends EntityInterface, I extends Serializa
         }
     }
 
+    @Override
     public E createInstance() {
-        return (E) getApplicationContext().getAutowireCapableBeanFactory().createBean(entityClass);
+        return (E) applicationContext.getAutowireCapableBeanFactory().createBean(entityClass);
     }
 
-    public E findById(I id) {
-        return (E) getEntityManager().find(entityClass, id);
+    @Transactional(readOnly = true, noRollbackFor = NoResultException.class)
+    @Override
+    public E findById(I id) throws DataAccessException, NoResultException {
+        return (E) entityManager.find(entityClass, id);
     }
 
-    @Transactional(readOnly = true)
-    public List<E> findAll() {
+    @Transactional(readOnly = true, noRollbackFor = NoResultException.class)
+    @Override
+    public List<E> findAll() throws DataAccessException, NoResultException {
         buildEntity();
-        return getEntityManager().createQuery(findAllQuery, entityClass).getResultList();
+        return entityManager.createQuery(findAllQuery, entityClass).getResultList();
     }
 
-    @Transactional(readOnly = true)
-    public List<E> findAllAndFetch() {
+    @Transactional(readOnly = true, noRollbackFor = NoResultException.class)
+    @Override
+    public List<E> findAllAndFetch() throws DataAccessException, NoResultException {
         buildEntity();
-        return fetch(getEntityManager().createQuery(findAllQuery, entityClass).getResultList());
+        return fetch(entityManager.createQuery(findAllQuery, entityClass).getResultList());
     }
 
-    @Transactional
-    public E saveOrUpdate(E e) throws Exception {
-        return getEntityManager().merge(e);
+    @Transactional(propagation = Propagation.MANDATORY)
+    @Override
+    public E saveOrUpdate(E e) throws DataAccessException {
+        return entityManager.merge(e);
     }
 
-    @Transactional
-    public void delete(E e) {
-        getEntityManager().remove(e);
+    @Transactional(propagation = Propagation.MANDATORY)
+    @Override
+    public void delete(E e) throws DataAccessException {
+        entityManager.remove(e);
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<E> fetch(List<E> entities) throws DataAccessException {
         for (E entity : entities) {
             ((EntityInterface) entity).fetch();
@@ -82,25 +93,13 @@ public abstract class AbstractDao<E extends EntityInterface, I extends Serializa
         return entities;
     }
 
-    /**
-     * @return the applicationContext
-     */
-    public ApplicationContext getApplicationContext() {
-        return applicationContext;
-    }
-
+    
+    
     /**
      * @param applicationContext the applicationContext to set
      */
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-    }
-
-    /**
-     * @return the entityManager
-     */
-    public EntityManager getEntityManager() {
-        return entityManager;
     }
 
     /**

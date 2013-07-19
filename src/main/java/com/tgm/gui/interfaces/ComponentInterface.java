@@ -41,6 +41,8 @@ public interface ComponentInterface {
     public ComponentInterface getParentComponent();
 
     public void setParentComponent(ComponentInterface parentComponent);
+    
+    public void setParentScreen(ScreenInterface screenInterface);
 
     public void setAppInterface(AppInterface appInterface);
     

@@ -4,95 +4,61 @@
  */
 package com.tgm.scanner;
 
+import com.tgm.interfaces.PlatformScannerInterface;
 import com.tgm.config.PlatformConfig;
-import com.tgm.data.dao.PlatformDao;
-import com.tgm.data.dao.GameDao;
+import com.tgm.data.interfaces.PlatformDaoInterface;
 import com.tgm.data.entity.PlatformEntity;
 import com.tgm.data.entity.GameEntity;
+import com.tgm.data.interfaces.GameDaoInterface;
 import com.tgm.enums.Platform;
 import com.tgm.resources.Path;
 import com.tgm.utils.GameUtils;
 import com.tgm.utils.MountUtils;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 /**
  *
  * @author christopher
  */
-public class PlatformScanner {
+public class PlatformScanner implements PlatformScannerInterface, DisposableBean {
 
     @Autowired
-    private PlatformDao platformDao;
+    private PlatformDaoInterface<PlatformEntity, Integer> platformDao;
     @Autowired
-    private GameDao gameDao;
-    @Autowired
-    private ApplicationContext context;
+    private GameDaoInterface<GameEntity, Integer> gameDao;
     @Autowired
     private MountUtils mountUtils;
-    private final HashMap<Platform, PlatformConfig> platformConfigs = new HashMap<Platform, PlatformConfig>();
-    private final String assertMessage = "An PlatformConfig already contains platform ";
     private boolean scanning = false;
-    private Lock scanLock = new ReentrantLock(true);
-
-    @Async
-    public void scan() {
-        if (scanLock.tryLock()) {
-            try {
-                Logger.getLogger(this.getClass()).info("Platform Scanner Initialised...");
-
-                findAllPlatformConfigs();
-
-                for (Map.Entry<Platform, PlatformConfig> entry : platformConfigs.entrySet()) {
-                    scanPlatform(entry.getValue());
-                }
-                
-                showList();
-                Logger.getLogger(this.getClass()).info("Platform Scanner Initialised...Completed");
-
-            } finally {
-                scanLock.unlock();
-            }
-        } else {
-            Logger.getLogger(this.getClass()).info("Platform Scanner Already Scanning......");
-        }
-
-    }
-
-    private void findAllPlatformConfigs() {
-        for (Map.Entry<String, PlatformConfig> entry : context.getBeansOfType(PlatformConfig.class).entrySet()) {
-            Assert.isTrue((!platformConfigs.containsKey(entry.getValue().getPlatform())), assertMessage + entry.getValue().getPlatform());
-            platformConfigs.put(entry.getValue().getPlatform(), entry.getValue());
-        }
-    }
+    private boolean processingScan = false;
+    private final HashMap<Platform, PlatformConfig> platformConfigs = new HashMap<Platform, PlatformConfig>();
 
     @Transactional
-    public void scanPlatform(PlatformConfig config) {
+    @Override
+    public boolean scanPlatform(PlatformConfig config) throws Exception {
         Logger.getLogger(this.getClass()).info("Scanning Platform: " + config.getPlatform());
-        try {
-            PlatformEntity platform = savePlatform(config);
-            for (Path path : config.getGamePath()) {
-                scanGamePath(platform, path);
+        scanning = true;
+        PlatformEntity platform = savePlatform(config);
+        for (Path path : config.getGamePath()) {
+            scanGamePath(platform, path);
+            if (!scanning) {
+                return false;
             }
-            Logger.getLogger(this.getClass()).info("Scanning Platform: " + config.getPlatform() + " Done");
-        } catch (Exception e) {
-            Logger.getLogger(this.getClass()).fatal(e);
         }
+        Logger.getLogger(this.getClass()).info("Scanning Platform: " + config.getPlatform() + " Done");
+        scanning = false;
+        return true;
     }
 
+    @Override
     public void scanGamePath(PlatformEntity platform, Path path) {
         Logger.getLogger(this.getClass()).info("Scanning Game Path: [" + path.getPath() + "]");
         if (mountUtils.isMountable(path)) {
             if (mountUtils.mount(platform.getName(), path)) {
+                processingScan = true;
                 try {
                     GameUtils.processGameFiles(this, platform.getName(), mountUtils.getMountedPath(platform.getName(), path), platform.getName().getFileTypes(), true);
                 } catch (Exception e) {
@@ -101,6 +67,7 @@ public class PlatformScanner {
                 if (!mountUtils.unmount(platform.getName(), path)) {
                     Logger.getLogger(this.getClass()).fatal("Unable to unmount drive for platform: " + platform.getName());
                 }
+                processingScan = false;
             } else {
                 Logger.getLogger(this.getClass()).fatal("Unable to mount drive check gamepath config for platform: " + platform.getName());
             }
@@ -116,12 +83,14 @@ public class PlatformScanner {
 
     //TODO: Add method to find game details from thegamesdb.net
     @Transactional
+    @Override
     public void processGame(Platform platform, String fileName, String path) throws Exception {
         Logger.getLogger(this.getClass()).info("Found Game: " + platform.name() + " - " + fileName + " | [" + path + "]");
         saveGame(platformDao.findPlatformByName(platform), fileName, path);
     }
 
     @Transactional
+    @Override
     public PlatformEntity savePlatform(PlatformConfig config) throws Exception {
         PlatformEntity e = null;
         try {
@@ -138,6 +107,7 @@ public class PlatformScanner {
     }
 
     @Transactional
+    @Override
     public GameEntity saveGame(PlatformEntity platform, String name, String path) throws Exception {
         GameEntity g = null;
         try {
@@ -164,9 +134,15 @@ public class PlatformScanner {
     }
 
     @Transactional
+    @Override
     public void showList() {
-        Logger.getLogger(this.getClass()).info("\n\n\nGame List...");
+        Logger.getLogger(this.getClass()).info("\n\n\nPLatform List...");
         int c = 0;
+        for (PlatformEntity platformEntity : platformDao.findAll()) {
+            Logger.getLogger(this.getClass()).info("PLATFORM: " + platformEntity.getName() + " " + platformEntity.getId());
+        }
+        Logger.getLogger(this.getClass()).info("\n\n\nGame List...");
+
         for (GameEntity game : gameDao.findAllAndFetch()) {
             Logger.getLogger(this.getClass()).info("   " + game.getPlatformRef().getName() + " - " + game.getName() + " [" + game.getGamePath() + "]");
             c++;
@@ -175,23 +151,16 @@ public class PlatformScanner {
     }
 
     /**
-     * @param context the context to set
-     */
-    public void setContext(ApplicationContext context) {
-        this.context = context;
-    }
-
-    /**
      * @param platformDao the platformDao to set
      */
-    public void setPlatformDao(PlatformDao platformDao) {
+    public void setPlatformDao(PlatformDaoInterface platformDao) {
         this.platformDao = platformDao;
     }
 
     /**
      * @param gameDao the gameDao to set
      */
-    public void setGameDao(GameDao gameDao) {
+    public void setGameDao(GameDaoInterface gameDao) {
         this.gameDao = gameDao;
     }
 
@@ -200,5 +169,27 @@ public class PlatformScanner {
      */
     public void setMountUtils(MountUtils mountUtils) {
         this.mountUtils = mountUtils;
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        Logger.getLogger(this.getClass()).info("DESTROYING SCANNER.....");
+        scanning = false;
+        int counter = 0;
+        while (processingScan) {
+            counter++;
+            if (counter > 30) {
+                processingScan = false;
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
+        }
+    }
+
+    @Override
+    public boolean isScanning() {
+        return scanning;
     }
 }
