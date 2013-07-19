@@ -5,9 +5,9 @@
 package com.tgm.gui.panels;
 
 import com.tgm.enums.Platform;
+import com.tgm.gui.components.Image;
 import com.tgm.gui.components.Label;
 import com.tgm.gui.components.Panel;
-import com.tgm.gui.components.Shape;
 import com.tgm.gui.enums.Command;
 import java.awt.Font;
 import org.apache.commons.lang.StringUtils;
@@ -18,21 +18,22 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.springframework.stereotype.Component;
+
 /**
  *
  * @author christopher
  */
 @Component
 public class MenuSidePanel extends Panel {
-    
+
     private float textSpinSpeed = 0.002f;
     private float textScaleValue = 1.0f;
     private boolean pause = false;
     private Long pauseTime = 0l;
     private int dir = 0;
-    private final int start = 80;
-    private final int insert = 25;
-    private final int margin = 7;
+    private final float start = 80;
+    private float insert = 25;
+    private float margin = 7;
     private int menuSelectionIndex = 1;
     private float menuSelectionPosition = 1;
     private float menuSelectionMovement = 1;
@@ -40,33 +41,52 @@ public class MenuSidePanel extends Panel {
     private int menuDisplayedIndex = 0;
     private int menuSize = 0;
     //-----------------
-
-    private void initTitle() {
-        add(new Label("menuTitleLabel", "The Games Menu", 10, 10, "Arial", Font.BOLD, 22));
-    }
+    private Color white = Color.white;
+    private float startPos = start - 2;
 
     private void initMenu() {
         Logger.getLogger(this.getClass()).info("initMenu 1");
+
+
+        float h = start;
+        int i = 0;
+        float t = 3.84f;
+        float hh = 24f;
+        float w = this.getWidth() / 1.05f;
+        float w2 = this.getWidth() / 1.10f;
+        float w3 = this.getWidth() / 1.20f;
+        float mm = (w - w2) / 2f;
+
+        margin = (w - w3) / 2f;
+        insert = getHeight() / 24f;
+
+        float msH = getHeight() / hh;
+        int fS = (int) (getHeight() / 37.5);
+        int tFS = (int) (getHeight() / 27.2);
+        float fH = getHeight() / 31.5f;
+        float fM = (msH - fH) / 2f;
+
+        startPos = start - fM;
+
         menuSelectionIndex = 0;
-        menuSelectionPosition = start - 2;
+        menuSelectionPosition = startPos;
         menuSelectionMovement = menuSelectionPosition;
         menuDisplayedIndex = 0;
 
-        int h = start;
-        int i = 0;
-        add(new Shape("menuSelection", Shape.Type.ROUND_RECTANGLE, 5, menuSelectionPosition, this.getWidth(), 20, 5));
-        ((Shape) getComponent("menuSelection")).setFill(Color.red);
+        add(new Label("menuTitleLabel", "The Games Menu", 0, 10, w2 , 50, Label.CENTER, "Arial", Font.BOLD, tFS, white));
 
-        add(new Label("menuLabel" + i, "Scan For Games", margin, h, "Arial", Font.BOLD, 16));
+        add(new Image("menuSelection", "images/menu_selection.png", mm, menuSelectionPosition, w2, msH));
+
+        add(new Label("menuLabel" + i, "Scan For Games", margin, h, w3, msH, Label.CENTER, "Arial", Font.BOLD, fS, white));
 
         for (Platform platform : Platform.values()) {
             h += insert;
             i++;
-            add(new Label("menuLabel" + i, WordUtils.capitalize(StringUtils.replace(platform.name(), "_", " ").toLowerCase()), margin, h, "Arial", Font.BOLD, 16));
+            add(new Label("menuLabel" + i, WordUtils.capitalize(StringUtils.replace(platform.name(), "_", " ").toLowerCase()), margin, h, w3, msH, Label.CENTER, "Arial", Font.BOLD, fS, white));
         }
         h += insert;
         i++;
-        add(new Label("menuLabel" + i, "Quit", margin, h, "Arial", Font.BOLD, 16));
+        add(new Label("menuLabel" + i, "Quit", margin, h, w3, msH, Label.CENTER, "Arial", Font.BOLD, fS, white));
         Logger.getLogger(this.getClass()).info("initMenu 2");
         menuSize = i + 1;
 
@@ -75,7 +95,6 @@ public class MenuSidePanel extends Panel {
 
     @Override
     public void init(GameContainer gc) throws SlickException {
-        initTitle();
         initMenu();
         super.init(gc);
     }
@@ -83,7 +102,8 @@ public class MenuSidePanel extends Panel {
     @Override
     public void update(GameContainer gc, int i) throws SlickException {
         super.update(gc, i);
-        updateTitle();
+        
+        //updateTitle();
         updateMenuSelection();
 
         if (gc.getInput().isKeyPressed(Input.KEY_RETURN)) {
@@ -147,15 +167,20 @@ public class MenuSidePanel extends Panel {
     }
 
     private void updateMenuSelection() {
-        menuSelectionPosition = (start - 2) + ((menuSelectionIndex < maxNumberMenuItemsDisplayed) ? menuSelectionIndex * insert : (maxNumberMenuItemsDisplayed - 1) * insert);
+        boolean vv = true;
+        menuSelectionPosition = (startPos) + ((menuSelectionIndex < maxNumberMenuItemsDisplayed) ? menuSelectionIndex * insert : (maxNumberMenuItemsDisplayed - 1) * insert);
+
         if (menuSelectionPosition < menuSelectionMovement) {
-            menuSelectionMovement -= 1;
-        }
-        if (menuSelectionPosition > menuSelectionMovement) {
-            menuSelectionMovement += 1;
+            menuSelectionMovement -= 2;
+            vv = false;
         }
 
-        ((Shape) getComponent("menuSelection")).setLocation(5, menuSelectionMovement);
+        if (menuSelectionPosition > menuSelectionMovement) {
+            menuSelectionMovement += 2;
+            vv = false;
+        }
+
+        getComponent("menuSelection").setY(menuSelectionMovement);
 
         for (int i = 0; i < menuSize; i++) {
             getComponent("menuLabel" + i).setVisable(false);
@@ -163,9 +188,11 @@ public class MenuSidePanel extends Panel {
 
         for (int i = 0; i < maxNumberMenuItemsDisplayed; i++) {
             float p = start + (i * insert);
-            getComponent("menuLabel" + (i + menuDisplayedIndex)).setLocation(margin, p);
+            getComponent("menuLabel" + (i + menuDisplayedIndex)).setY(p);
             getComponent("menuLabel" + (i + menuDisplayedIndex)).setVisable(true);
         }
+
+
     }
 
     private void menuSelected() {

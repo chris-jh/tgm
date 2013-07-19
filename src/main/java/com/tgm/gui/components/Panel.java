@@ -23,6 +23,27 @@ public class Panel extends AbstractComponent {
     private Image backgroundImage;
     private String background = null;
 
+    public Panel(){
+        
+    }
+    
+    public Panel(String id, float x, float y, float width, float height) {
+        this.id = id;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+    
+    public Panel(String id, float x, float y, float width, float height, String backgroundPath) {
+        this.id = id;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.background = backgroundPath;
+    }
+    
     public void setBackground(String background) {
         this.background = background;
     }
@@ -72,8 +93,12 @@ public class Panel extends AbstractComponent {
         }
 
         for (ComponentInterface componentInterface : components) {
-            componentInterface.setAppInterface(appInterface);
-            componentInterface.init(gc);
+            if (!componentInterface.isInitialised()) {
+                componentInterface.setParentScreen(parentScreen);
+                componentInterface.setParentComponent(this);
+                componentInterface.setAppInterface(appInterface);
+                componentInterface.init(gc);
+            }
         }
         initialised = true;
     }
