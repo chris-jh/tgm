@@ -24,6 +24,8 @@ public abstract class AbstractComponent implements ComponentInterface {
     protected ScreenInterface parentScreen;
     protected AppInterface appInterface;
     protected boolean visible = true;
+    protected float sx = 1.0f;
+    protected float sy = 1.0f;
 
     @Override
     public boolean isInitialised() {
@@ -131,5 +133,33 @@ public abstract class AbstractComponent implements ComponentInterface {
     @Override
     public void setParentScreen(ScreenInterface screenInterface) {
         this.parentScreen = screenInterface;
+    }
+
+    /**
+     * @return the sx
+     */
+    public float getSx() {
+        return sx;
+    }
+
+    /**
+     * @param sx the sx to set
+     */
+    public void setSx(float sx) {
+        this.sx = sx;
+    }
+
+    /**
+     * @return the sy
+     */
+    public float getSy() {
+        return sy;
+    }
+
+    /**
+     * @param sy the sy to set
+     */
+    public void setSy(float sy) {
+        this.sy = sy;
     }
 }

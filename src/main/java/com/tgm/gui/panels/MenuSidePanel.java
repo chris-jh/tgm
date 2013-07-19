@@ -26,20 +26,23 @@ import org.springframework.stereotype.Component;
 @Component
 public class MenuSidePanel extends Panel {
 
-    private float textSpinSpeed = 0.002f;
+    private float textSpinSpeed = 0.02f;
     private float textScaleValue = 1.0f;
     private boolean pause = false;
     private Long pauseTime = 0l;
     private int dir = 0;
+    
+    
     private final float start = 80;
     private float insert = 25;
     private float margin = 7;
     private int menuSelectionIndex = 1;
     private float menuSelectionPosition = 1;
     private float menuSelectionMovement = 1;
-    private int maxNumberMenuItemsDisplayed = 5;
+    private int maxNumberMenuItemsDisplayed = 15;
     private int menuDisplayedIndex = 0;
     private int menuSize = 0;
+    
     //-----------------
     private Color white = Color.white;
     private float startPos = start - 2;
@@ -73,24 +76,28 @@ public class MenuSidePanel extends Panel {
         menuSelectionMovement = menuSelectionPosition;
         menuDisplayedIndex = 0;
 
-        add(new Label("menuTitleLabel", "The Games Menu", 0, 10, w2 , 50, Label.CENTER, "Arial", Font.BOLD, tFS, white));
+        add(new Label("menuTitleLabel", "The Games Menu", 0, 10, w2, 50, Label.CENTER, "Arial", Font.BOLD, tFS, white, true));
 
         add(new Image("menuSelection", "images/menu_selection.png", mm, menuSelectionPosition, w2, msH));
 
-        add(new Label("menuLabel" + i, "Scan For Games", margin, h, w3, msH, Label.CENTER, "Arial", Font.BOLD, fS, white));
+        add(new Label("menuLabel" + i, "Scan For Games", margin, h, w3, msH, Label.CENTER, "Arial", Font.BOLD, fS, white, true));
 
         for (Platform platform : Platform.values()) {
             h += insert;
             i++;
-            add(new Label("menuLabel" + i, WordUtils.capitalize(StringUtils.replace(platform.name(), "_", " ").toLowerCase()), margin, h, w3, msH, Label.CENTER, "Arial", Font.BOLD, fS, white));
+            add(new Label("menuLabel" + i, WordUtils.capitalize(StringUtils.replace(platform.name(), "_", " ").toLowerCase()), margin, h, w3, msH, Label.CENTER, "Arial", Font.BOLD, fS, white, true));
         }
         h += insert;
         i++;
-        add(new Label("menuLabel" + i, "Quit", margin, h, w3, msH, Label.CENTER, "Arial", Font.BOLD, fS, white));
+        add(new Label("menuLabel" + i, "Quit", margin, h, w3, msH, Label.CENTER, "Arial", Font.BOLD, fS, white, true));
         Logger.getLogger(this.getClass()).info("initMenu 2");
         menuSize = i + 1;
 
         Logger.getLogger(this.getClass()).info("initMenu 3");
+        
+        if (maxNumberMenuItemsDisplayed > menuSize){
+            maxNumberMenuItemsDisplayed = menuSize;
+        }
     }
 
     @Override
@@ -102,8 +109,8 @@ public class MenuSidePanel extends Panel {
     @Override
     public void update(GameContainer gc, int i) throws SlickException {
         super.update(gc, i);
-        
-        //updateTitle();
+
+//        updateTitle();
         updateMenuSelection();
 
         if (gc.getInput().isKeyPressed(Input.KEY_RETURN)) {
@@ -118,28 +125,35 @@ public class MenuSidePanel extends Panel {
 
     }
 
-    private void updateTitle() {
-        if (pause) {
-            if (System.currentTimeMillis() > pauseTime) {
-                pause = false;
-            }
-        } else {
-            if (dir == 0) {
-                textScaleValue += textSpinSpeed;
-                if (textScaleValue > 1.0) {
-                    dir = 1;
-                    pause = true;
-                    pauseTime = System.currentTimeMillis() + 1000;
-                }
-            } else if (dir == 1) {
-                textScaleValue -= textSpinSpeed;
-                if (textScaleValue < -1.0) {
-                    dir = 0;
-                }
-            }
-        }
-        //title.setScale(textScaleValue, title.getScale().y);
-    }
+//    private void updateTitle() {
+//        if (pause) {
+//            if (System.currentTimeMillis() > pauseTime) {
+//                pause = false;
+//            }
+//        } else {
+//            if (dir == 0) {
+//                textScaleValue += textSpinSpeed;
+//                if (textScaleValue > 1.0) {
+//                    dir = 1;
+//                    pause = true;
+//                    pauseTime = System.currentTimeMillis() + 2000;
+//                } else {
+//                    pauseTime = System.currentTimeMillis() + 50;
+//                    pause = true;
+//
+//                }
+//            } else if (dir == 1) {
+//                textScaleValue -= textSpinSpeed;
+//                pauseTime = System.currentTimeMillis() + 50;
+//                pause = true;
+//
+//                if (textScaleValue < -1.0) {
+//                    dir = 0;
+//                }
+//            }
+//        }
+//        getComponent("menuTitleLabel").setSx(textScaleValue);
+//    }
 
     private void menuUp() {
         if ((menuSelectionIndex - 1) >= 0) {
