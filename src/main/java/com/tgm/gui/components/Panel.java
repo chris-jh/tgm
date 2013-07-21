@@ -23,10 +23,9 @@ public class Panel extends AbstractComponent {
     private Image backgroundImage;
     private String background = null;
 
-    public Panel(){
-        
+    public Panel() {
     }
-    
+
     public Panel(String id, float x, float y, float width, float height) {
         this.id = id;
         this.x = x;
@@ -34,7 +33,7 @@ public class Panel extends AbstractComponent {
         this.width = width;
         this.height = height;
     }
-    
+
     public Panel(String id, float x, float y, float width, float height, String backgroundPath) {
         this.id = id;
         this.x = x;
@@ -43,23 +42,26 @@ public class Panel extends AbstractComponent {
         this.height = height;
         this.background = backgroundPath;
     }
-    
+
     public void setBackground(String background) {
         this.background = background;
     }
 
-    public void add(ComponentInterface componentInterface) {
+    public ComponentInterface add(ComponentInterface componentInterface) {
         if (!components.contains(componentInterface)) {
             componentInterface.setParentComponent(this);
             components.add(componentInterface);
         }
+        return componentInterface;
+
     }
 
-    public void add(int index, ComponentInterface componentInterface) {
+    public ComponentInterface add(int index, ComponentInterface componentInterface) {
         if (!components.contains(componentInterface)) {
             componentInterface.setParentComponent(this);
             components.add(index, componentInterface);
         }
+        return componentInterface;
     }
 
     public void remove(ComponentInterface componentInterface) {
@@ -111,6 +113,25 @@ public class Panel extends AbstractComponent {
                     componentInterface.init(gc);
                 }
                 componentInterface.update(gc, i);
+            }
+            
+            if (moveX){
+                if (System.currentTimeMillis() > moveXTime){
+                    moveXTime = System.currentTimeMillis() + moveXTimeSpeed;
+                    if (moveToX > x){
+                        x+= moveXSpeed;
+                        if (x >= moveToX){
+                            x = moveToX;
+                            moveX=false;
+                        }
+                    } else if (moveToX < x){
+                        x-= moveXSpeed;
+                        if (x <= moveToX){
+                            x = moveToX;
+                            moveX=false;
+                        }
+                    }
+                }                
             }
         }
     }

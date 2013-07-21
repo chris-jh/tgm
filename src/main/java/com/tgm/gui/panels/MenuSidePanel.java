@@ -31,71 +31,66 @@ public class MenuSidePanel extends Panel {
     private boolean pause = false;
     private Long pauseTime = 0l;
     private int dir = 0;
-    
-    
-    private final float start = 80;
-    private float insert = 25;
-    private float margin = 7;
+    private final float marginTop = 80;
+    private float menuInsert = 25;
+    private float textMarginLeft = 7;
     private int menuSelectionIndex = 1;
     private float menuSelectionPosition = 1;
     private float menuSelectionMovement = 1;
     private int maxNumberMenuItemsDisplayed = 15;
     private int menuDisplayedIndex = 0;
     private int menuSize = 0;
-    
     //-----------------
     private Color white = Color.white;
-    private float startPos = start - 2;
+    private float marginSelectionTop = marginTop - 2;
 
     private void initMenu() {
         Logger.getLogger(this.getClass()).info("initMenu 1");
 
+        float marginMenu = marginTop;
+        float menuHeightPercentage = 24f;
+        float normalWidth = this.getWidth() / 1.05f;
+        float selectionWidth = this.getWidth() / 1.10f;
+        float textWidth = this.getWidth() / 1.20f;
+        float selcetionMargin = (normalWidth - selectionWidth) / 2f;
 
-        float h = start;
+        float menuSelectionHeight = getHeight() / menuHeightPercentage;
+        float menuFontHeight = getHeight() / 31.5f;
+        float menuFontMarginTop = (menuSelectionHeight - menuFontHeight) / 2f;
+
         int i = 0;
-        float t = 3.84f;
-        float hh = 24f;
-        float w = this.getWidth() / 1.05f;
-        float w2 = this.getWidth() / 1.10f;
-        float w3 = this.getWidth() / 1.20f;
-        float mm = (w - w2) / 2f;
+        int menuFontSize = (int) (getHeight() / 37.5);
+        int titleFontSize = (int) (getHeight() / 27.2);
 
-        margin = (w - w3) / 2f;
-        insert = getHeight() / 24f;
-
-        float msH = getHeight() / hh;
-        int fS = (int) (getHeight() / 37.5);
-        int tFS = (int) (getHeight() / 27.2);
-        float fH = getHeight() / 31.5f;
-        float fM = (msH - fH) / 2f;
-
-        startPos = start - fM;
+        textMarginLeft = (normalWidth - textWidth) / 2f;
+        menuInsert = getHeight() / 24f;
+        marginSelectionTop = marginTop - menuFontMarginTop;
 
         menuSelectionIndex = 0;
-        menuSelectionPosition = startPos;
+        menuSelectionPosition = marginSelectionTop;
         menuSelectionMovement = menuSelectionPosition;
         menuDisplayedIndex = 0;
 
-        add(new Label("menuTitleLabel", "The Games Menu", 0, 10, w2, 50, Label.CENTER, "Arial", Font.BOLD, tFS, white, true));
+        add(new Label("menuTitleLabel", "The Games Menu", 0, 10, selectionWidth, 50, Label.CENTER, "Arial", Font.BOLD, titleFontSize, white, true));
 
-        add(new Image("menuSelection", "images/menu_selection.png", mm, menuSelectionPosition, w2, msH));
+        add(new Image("menuSelection", "images/menu_selection.png", selcetionMargin, menuSelectionPosition, selectionWidth, menuSelectionHeight));
 
-        add(new Label("menuLabel" + i, "Scan For Games", margin, h, w3, msH, Label.CENTER, "Arial", Font.BOLD, fS, white, true));
+        add(new Label("menuLabel" + i, "Scan For Games", textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true));
 
         for (Platform platform : Platform.values()) {
-            h += insert;
+            marginMenu += menuInsert;
             i++;
-            add(new Label("menuLabel" + i, WordUtils.capitalize(StringUtils.replace(platform.name(), "_", " ").toLowerCase()), margin, h, w3, msH, Label.CENTER, "Arial", Font.BOLD, fS, white, true));
+            add(new Label("menuLabel" + i, WordUtils.capitalize(StringUtils.replace(platform.name(), "_", " ").toLowerCase()), textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true));
         }
-        h += insert;
+        marginMenu += menuInsert;
         i++;
-        add(new Label("menuLabel" + i, "Quit", margin, h, w3, msH, Label.CENTER, "Arial", Font.BOLD, fS, white, true));
+        add(new Label("menuLabel" + i, "Quit", textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true));
         Logger.getLogger(this.getClass()).info("initMenu 2");
         menuSize = i + 1;
 
         Logger.getLogger(this.getClass()).info("initMenu 3");
-        
-        if (maxNumberMenuItemsDisplayed > menuSize){
+
+        if (maxNumberMenuItemsDisplayed > menuSize) {
             maxNumberMenuItemsDisplayed = menuSize;
         }
     }
@@ -109,20 +104,32 @@ public class MenuSidePanel extends Panel {
     @Override
     public void update(GameContainer gc, int i) throws SlickException {
         super.update(gc, i);
+        //Logger.getLogger(this.getClass()).info("UPDATE MENU PANEL "+System.currentTimeMillis());
 
 //        updateTitle();
         updateMenuSelection();
+        boolean r = false;
+        if (gc.getInput().isKeyPressed(Input.KEY_RIGHT)){
+            r = true;
+            Logger.getLogger(this.getClass()).info("KEY RIGHT: on focus "+focused);
+        }
+        
+        if (focused) {
 
-        if (gc.getInput().isKeyPressed(Input.KEY_RETURN)) {
-            menuSelected();
+            if (gc.getInput().isKeyPressed(Input.KEY_RETURN)) {
+                menuSelected();
+            }
+            if (gc.getInput().isKeyPressed(Input.KEY_UP)) {
+                menuUp();
+            }
+            if (gc.getInput().isKeyPressed(Input.KEY_DOWN)) {
+                menuDown();
+            }
+            if ((gc.getInput().isKeyPressed(Input.KEY_RIGHT)) || r ) {
+                menuRight();
+            }
+            gc.getInput().clearKeyPressedRecord();
         }
-        if (gc.getInput().isKeyPressed(Input.KEY_UP)) {
-            menuUp();
-        }
-        if (gc.getInput().isKeyPressed(Input.KEY_DOWN)) {
-            menuDown();
-        }
-
     }
 
 //    private void updateTitle() {
@@ -154,7 +161,6 @@ public class MenuSidePanel extends Panel {
 //        }
 //        getComponent("menuTitleLabel").setSx(textScaleValue);
 //    }
-
     private void menuUp() {
         if ((menuSelectionIndex - 1) >= 0) {
             menuSelectionIndex -= 1;
@@ -182,7 +188,7 @@ public class MenuSidePanel extends Panel {
 
     private void updateMenuSelection() {
         boolean vv = true;
-        menuSelectionPosition = (startPos) + ((menuSelectionIndex < maxNumberMenuItemsDisplayed) ? menuSelectionIndex * insert : (maxNumberMenuItemsDisplayed - 1) * insert);
+        menuSelectionPosition = (marginSelectionTop) + ((menuSelectionIndex < maxNumberMenuItemsDisplayed) ? menuSelectionIndex * menuInsert : (maxNumberMenuItemsDisplayed - 1) * menuInsert);
 
         if (menuSelectionPosition < menuSelectionMovement) {
             menuSelectionMovement -= 2;
@@ -197,15 +203,18 @@ public class MenuSidePanel extends Panel {
         getComponent("menuSelection").setY(menuSelectionMovement);
 
         for (int i = 0; i < menuSize; i++) {
-            getComponent("menuLabel" + i).setVisable(false);
+            getComponent("menuLabel" + i).setVisible(false);
         }
 
         for (int i = 0; i < maxNumberMenuItemsDisplayed; i++) {
-            float p = start + (i * insert);
+            float p = marginTop + (i * menuInsert);
             getComponent("menuLabel" + (i + menuDisplayedIndex)).setY(p);
-            getComponent("menuLabel" + (i + menuDisplayedIndex)).setVisable(true);
+            getComponent("menuLabel" + (i + menuDisplayedIndex)).setVisible(isFocused());
         }
 
+        if (!isFocused()){
+            getComponent("menuLabel" + menuSelectionIndex).setVisible(true);
+        }
 
     }
 
@@ -215,6 +224,19 @@ public class MenuSidePanel extends Panel {
             parentScreen.command(Command.SCAN_FOR_GAMES);
         } else if (menuSelectionIndex == quitIndex) {
             parentScreen.command(Command.QUIT);
+        } else {
+            parentScreen.command(Command.GAMEPANEL_UPDATE);
         }
+    }
+
+    private void menuRight() {
+        Logger.getLogger(this.getClass()).info("MENU RIGHT "+menuSelectionIndex);
+        int quitIndex = menuSize - 1;
+        if (menuSelectionIndex == 0) {
+        } else if (menuSelectionIndex == quitIndex) {
+        } else {
+            parentScreen.command(Command.GAMEPANEL_FOCUS);
+        }
+
     }
 }

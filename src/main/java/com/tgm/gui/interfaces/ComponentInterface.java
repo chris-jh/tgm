@@ -52,12 +52,16 @@ public interface ComponentInterface {
 
     public void render(GameContainer gc, Graphics g) throws SlickException;
     
-    public void setVisable(boolean visible);
+    public void setVisible(boolean visible);
     
-    public boolean isVisiable();
+    public boolean isVisible();
 
     public void setSx(float sx);
     
     public void setSy(float sy);
 
+    public boolean isFocused();
+
+    public void setFocused(boolean focused);
+    
 }

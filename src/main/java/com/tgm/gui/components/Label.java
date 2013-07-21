@@ -29,6 +29,7 @@ public class Label extends AbstractComponent {
     private int align = 0;
     private float offset = 0;
     private boolean shadow = false;
+    
 
     public Label(String id, String text, float x, float y) {
         this.id = id;
@@ -45,7 +46,7 @@ public class Label extends AbstractComponent {
         this.colour = colour;
         font = new Font(fontName, fontStyle, fontSize);
     }
-    
+
     public Label(String id, String text, float x, float y, String fontName, int fontStyle, int fontSize, Color colour, boolean shadow) {
         this.id = id;
         this.text = text;
@@ -67,7 +68,7 @@ public class Label extends AbstractComponent {
         this.align = align;
         font = new Font(fontName, fontStyle, fontSize);
     }
-    
+
     public Label(String id, String text, float x, float y, float w, float h, int align, String fontName, int fontStyle, int fontSize, Color colour, boolean shadow) {
         this.id = id;
         this.text = text;
@@ -92,7 +93,9 @@ public class Label extends AbstractComponent {
      * @param text the text to set
      */
     public void setText(String text) {
-        this.text = text;
+        if (!this.text.equals(text)) {
+            this.text = text;
+        }
     }
 
     /**
@@ -113,38 +116,31 @@ public class Label extends AbstractComponent {
 
     @Override
     public void update(GameContainer gc, int i) throws SlickException {
-        if (update) {
-            update = false;
-            trueTypeFont = new TrueTypeFont(font, true);
-        }
+        if (visible) {
+            if (update) {
+                update = false;
+                trueTypeFont = new TrueTypeFont(font, true);
+            }
 
-        if (fp) {
-            if (align == CENTER) {
-                offset = (getWidth() - getTextWidth()) / 2f;
+            if (fp) {
+                if (align == CENTER) {
+                    offset = (getWidth() - getTextWidth()) / 2f;
+                }
+                if (align == RIGHT) {
+                    offset = (getWidth() - getTextWidth());
+                }
+                fp = false;
             }
-            if (align == RIGHT) {
-                offset = (getWidth() - getTextWidth());
-            }
-            fp = false;
         }
     }
 
     @Override
     public void render(GameContainer gc, Graphics g) throws SlickException {
         if (visible) {
-//            float ff = 0.0f;
-//            if (sx >= 0.0){
-//                ff = (getWidth() - Math.abs(getWidth() * sx)) /2;
-//            } else if (sx < 0.0){
-//                ff = ((getWidth() - (getWidth() * sx)) /2) - offset;
-//            }
-//            g.translate(x+offset+ff, y);
-//            g.scale(sx, sy);
             if (shadow) {
-                trueTypeFont.drawString(x + offset + 3, y + 3, getText(), Color.black);
+                trueTypeFont.drawString(getX() + offset + ((float) font.getSize() / 7f), getY() + ((float) font.getSize() / 7f), getText(), Color.black);
             }
-            trueTypeFont.drawString(x + offset, y, getText(), colour);
-//            g.resetTransform();
+            trueTypeFont.drawString(getX() + offset, getY(), getText(), colour);
         }
     }
 

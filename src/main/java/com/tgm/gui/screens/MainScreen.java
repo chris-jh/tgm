@@ -7,6 +7,7 @@ package com.tgm.gui.screens;
 import com.tgm.Boot;
 import com.tgm.gui.components.Panel;
 import com.tgm.gui.enums.Command;
+import com.tgm.gui.panels.GamesLibraryPanel;
 import com.tgm.gui.panels.MenuSidePanel;
 import com.tgm.interfaces.ScannerInterface;
 import org.apache.log4j.Logger;
@@ -25,9 +26,9 @@ public class MainScreen extends AbstractScreen {
     private MenuSidePanel menu;
     @Autowired
     private ScannerInterface scanner;
-
     private Panel mainPanel;
-    
+    private GamesLibraryPanel gamesPanel;
+
     {
         screenName = "Main Scene";
     }
@@ -39,11 +40,20 @@ public class MainScreen extends AbstractScreen {
         menu.setSize(appInterface.getWidth() / 3.69f, appInterface.getHeight());
         menu.setBackground("images/menu_background.png");
         menu.setLocation(0, 0);
-        
+
         mainPanel = new Panel("mainPanel", 0, 0, appInterface.getWidth(), appInterface.getHeight(), "images/background_white.png");
         mainPanel.setParentScreen(this);
         mainPanel.setAppInterface(appInterface);
+
+        float panelX = mainPanel.getWidth() / 3.95f;
+        float panelWidth = mainPanel.getWidth() - panelX;
+        float panelHeight = mainPanel.getHeight();
+
+        gamesPanel = (GamesLibraryPanel) mainPanel.add(new GamesLibraryPanel("gamesPanel", panelX, 0, panelWidth, panelHeight));
+
         mainPanel.add(menu);
+
+        menuFocus();
     }
 
     @Override
@@ -88,11 +98,35 @@ public class MainScreen extends AbstractScreen {
                 scanner.scan();
                 break;
             }
+            case GAMEPANEL_FOCUS: {
+                gamePanelFocus();
+                break;
+            }
+            case GAMEPANEL_UPDATE: {
+                break;
+            }
+            case MENU_FOCUS:{
+                menuFocus();
+                break;
+            }
             case QUIT: {
                 Boot.exit(0);
             }
         }
         Logger.getLogger(this.getClass()).info("SCREEN COMMAND: " + command + " DONE");
+
+    }
+
+    private void gamePanelFocus() {
+        Logger.getLogger(this.getClass()).info("GAME PANEL FOCUSED");
+        menu.setFocused(false);
+        gamesPanel.setFocused(true);
+    }
+
+    private void menuFocus() {
+        Logger.getLogger(this.getClass()).info("MENU PANEL FOCUSED");
+        menu.setFocused(true);
+        gamesPanel.setFocused(false);
 
     }
 }

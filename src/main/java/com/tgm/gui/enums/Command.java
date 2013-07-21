@@ -11,6 +11,9 @@ package com.tgm.gui.enums;
 public enum Command {
     
     SCAN_FOR_GAMES,
+    GAMEPANEL_UPDATE,
+    GAMEPANEL_FOCUS,
+    MENU_FOCUS,
     QUIT
     
 }
