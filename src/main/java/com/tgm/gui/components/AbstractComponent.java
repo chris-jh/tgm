@@ -26,7 +26,14 @@ public abstract class AbstractComponent implements ComponentInterface {
     protected boolean visible = true;
     protected float sx = 1.0f;
     protected float sy = 1.0f;
-
+    protected boolean focused = false;
+    protected float moveToX = 0.0f;
+    protected boolean moveX = false;
+    protected float moveXSpeed = 50.0f;
+    protected long moveXTime=0;
+    protected long moveXTimeSpeed=50;
+    
+    
     @Override
     public boolean isInitialised() {
         return initialised;
@@ -121,12 +128,12 @@ public abstract class AbstractComponent implements ComponentInterface {
     }
 
     @Override
-    public void setVisable(boolean visible) {
+    public void setVisible(boolean visible) {
         this.visible = visible;
     }
 
     @Override
-    public boolean isVisiable() {
+    public boolean isVisible() {
         return this.visible;
     }
 
@@ -161,5 +168,27 @@ public abstract class AbstractComponent implements ComponentInterface {
      */
     public void setSy(float sy) {
         this.sy = sy;
+    }
+
+    /**
+     * @return the focused
+     */
+    public boolean isFocused() {
+        return focused;
+    }
+
+    /**
+     * @param focused the focused to set
+     */
+    public void setFocused(boolean focused) {
+        this.focused = focused;
+    }
+
+    /**
+     * @param moveToX the moveToX to set
+     */
+    public void setMoveToX(float moveToX) {
+        this.moveToX = moveToX;
+        moveX = true;
     }
 }
