@@ -20,6 +20,10 @@ public interface ComponentInterface {
 
     public float getY();
 
+    public float getPlainY();
+
+    public float getPlainX();
+
     public void setX(float x);
 
     public void setY(float y);
@@ -41,27 +45,26 @@ public interface ComponentInterface {
     public ComponentInterface getParentComponent();
 
     public void setParentComponent(ComponentInterface parentComponent);
-    
+
     public void setParentScreen(ScreenInterface screenInterface);
 
     public void setAppInterface(AppInterface appInterface);
-    
+
     public void init(GameContainer gc) throws SlickException;
 
     public void update(GameContainer gc, int i) throws SlickException;
 
     public void render(GameContainer gc, Graphics g) throws SlickException;
-    
+
     public void setVisible(boolean visible);
-    
+
     public boolean isVisible();
 
     public void setSx(float sx);
-    
+
     public void setSy(float sy);
 
     public boolean isFocused();
 
     public void setFocused(boolean focused);
-    
 }

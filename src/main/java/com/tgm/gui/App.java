@@ -4,13 +4,18 @@ import com.tgm.gui.enums.Screen;
 import com.tgm.gui.interfaces.AppInterface;
 import com.tgm.gui.interfaces.ScreenInterface;
 import com.tgm.gui.lib.Engine;
+import com.tgm.gui.screens.MainScreen;
+import com.tgm.gui.screens.PlatformScreen;
+import com.tgm.scanner.PlatformScanner;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.log4j.Logger;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Async;
 
@@ -34,6 +39,8 @@ public class App implements AppInterface, Runnable {
     AppGameContainer appGameContainer;
     Engine engine;
     ScreenInterface screen = null;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     public App() {
     }
@@ -53,14 +60,13 @@ public class App implements AppInterface, Runnable {
     }
 
     /*private void initExtra() throws Exception {
-        Logger.getLogger(this.getClass()).info("APP INIT EXTRA");
-        menu.setAppInterface(this);
-        menu.setLocation(0, 0);
-        menu.setSize(this.getWidth() / 4.1f, this.getHeight());
-        Logger.getLogger(this.getClass()).info("APP INIT EXTRA Done");
+     Logger.getLogger(this.getClass()).info("APP INIT EXTRA");
+     menu.setAppInterface(this);
+     menu.setLocation(0, 0);
+     menu.setSize(this.getWidth() / 4.1f, this.getHeight());
+     Logger.getLogger(this.getClass()).info("APP INIT EXTRA Done");
 
-    }*/
-
+     }*/
     private void initDisplay() {
         Logger.getLogger(this.getClass()).info("APP INIT ENGINE");
 
@@ -70,7 +76,7 @@ public class App implements AppInterface, Runnable {
             appGameContainer.setShowFPS(false);
             //appGameContainer.setFullscreen(true);
             appGameContainer.setDisplayMode(width, height, fullscreen);
-            
+
             Logger.getLogger(this.getClass()).info("Display: " + width + "x" + height + " F:" + fullscreen);
             /*if (!fullscreen) {
              appGameContainer.setDisplayMode(width, height, false);
@@ -94,6 +100,8 @@ public class App implements AppInterface, Runnable {
      */
     private void initScreens() {
         Logger.getLogger(this.getClass()).info("APP INIT SCREENS");
+        screens.put(Screen.MAIN, applicationContext.getAutowireCapableBeanFactory().createBean(MainScreen.class));
+        screens.put(Screen.PLATFORM, applicationContext.getAutowireCapableBeanFactory().createBean(PlatformScreen.class));
 
         try {
             for (Map.Entry<Screen, ScreenInterface> entry : screens.entrySet()) {
@@ -113,7 +121,6 @@ public class App implements AppInterface, Runnable {
         processNextScreen(Screen.MAIN);
         Logger.getLogger(this.getClass()).info("APP INIT ENGINE START");
         appGameContainer.start();
-        Logger.getLogger(this.getClass()).info("APP INIT ENGINE STARTED");
     }
 
     /**
@@ -122,9 +129,11 @@ public class App implements AppInterface, Runnable {
      * @param screen
      */
     private void playScreen(Screen screenEnum) {
+        Logger.getLogger(this.getClass()).info("Play Screen: " + screenEnum);
         screen = getScreen(screenEnum);
         if (screen != null) {
             Logger.getLogger(this.getClass()).info("Show Screen: " + screen.getTitle());
+            screen.reset();
             engine.setScreen(screen);
         } else {
             Logger.getLogger(this.getClass()).info("No Screen: " + screenEnum);
@@ -147,7 +156,13 @@ public class App implements AppInterface, Runnable {
     }
 
     @Override
+    public ScreenInterface getScreenInterface(Screen screen) {
+        return getScreen(screen);
+    }
+
+    @Override
     public void run() {
+        Logger.getLogger(this.getClass()).info("RUNNING.....");
         while (running) {
             Screen nextScreen = screenQueue.poll();
             if (nextScreen != null) {
@@ -217,5 +232,12 @@ public class App implements AppInterface, Runnable {
     @Override
     public ScreenInterface getCurrentScreenInterface() {
         return screen;
+    }
+
+    /**
+     * @param applicationContext the applicationContext to set
+     */
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 }

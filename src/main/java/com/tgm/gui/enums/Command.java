@@ -14,6 +14,9 @@ public enum Command {
     GAMEPANEL_UPDATE,
     GAMEPANEL_FOCUS,
     MENU_FOCUS,
+    GO_BACK,
+    MAIN_MENU,
+    PLATFORM_MENU,
     QUIT
     
 }

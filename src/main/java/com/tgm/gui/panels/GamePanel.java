@@ -6,10 +6,7 @@ package com.tgm.gui.panels;
 
 import com.tgm.gui.components.Image;
 import com.tgm.gui.components.Label;
-import com.tgm.gui.components.Label;
 import com.tgm.gui.components.Panel;
-import java.awt.Font;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -20,8 +17,8 @@ import org.newdawn.slick.SlickException;
  */
 public class GamePanel extends Panel {
 
-    private String gameBackground = "/images/game.png";
-    private String gameSelectBackground = "/images/gameSelect.png";
+    private String gameBackground = "/images/game2.png";
+    private String gameSelectBackground = "/images/gameSelect2.png";
     private boolean selected = false;
     private Image gameImage;
     private Image gameBackgroundImage;
@@ -56,19 +53,22 @@ public class GamePanel extends Panel {
     }
 
     private void initGamePanel(GameContainer gc) {
+        float marginX = (this.getWidth() * 0.10f) / 2f;
+        float marginY = (this.getHeight()* 0.10f) / 2f;
+        
         //float gh = this.getHeight() / ratio;
-        gameBackgroundImage = (Image) add(new Image("gameBackground", gameBackground, 0, 0, this.getWidth(), this.getHeight()));
-        gameSelectBackgroundImage = (Image) add(new Image("gameSelectBackground", gameSelectBackground, 0, 0, this.getWidth(), this.getHeight()));
         
-        float iWidth = this.getWidth() / 1.15f;
-        float iHeight = this.getHeight() / 1.15f;
+        float iWidth = (this.getWidth()-(marginX)) / 1.15f;
+        float iHeight = (this.getHeight()-(marginY)) / 1.15f;
         
-        float marginW = (this.getWidth() - iWidth) / 2f;
-        float marginH = (this.getHeight() - iHeight) / 2f;
-        
+        float marginW = ((this.getWidth()+(marginX)) - iWidth) / 2f;
+        float marginH = ((this.getHeight()-marginY)- iHeight) / 2f;
         
         
         gameImage = (Image) add(new Image("gameImage", gamePath, marginW, marginH, iWidth, iHeight));
+        gameBackgroundImage = (Image) add(new Image("gameBackground", gameBackground, 0+marginX, 0, this.getWidth()-(marginX), this.getHeight()-(marginY)));
+        gameSelectBackgroundImage = (Image) add(new Image("gameSelectBackground", gameSelectBackground, 0+marginX, 0, this.getWidth()-marginX, this.getHeight()-marginY));
+        
         //titleLabel = (Label)add(new Label("gameTitleLabel", gameName, 0, gh, this.width, this.getHeight() - gh, Label.CENTER, "Arial", Font.BOLD, (int)(this.width / 8.35f), new Color(78,0,110), false));
     }
 

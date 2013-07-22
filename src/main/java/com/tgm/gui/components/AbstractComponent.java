@@ -48,6 +48,16 @@ public abstract class AbstractComponent implements ComponentInterface {
     public float getY() {
         return parentComponent != null ? parentComponent.getY() + y : y;
     }
+    
+    @Override
+    public float getPlainX(){
+        return x;
+    }
+    
+    @Override
+    public float getPlainY(){
+        return y;
+    }
 
     @Override
     public void setX(float x) {
