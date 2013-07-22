@@ -70,6 +70,7 @@ public class App implements AppInterface, Runnable {
             appGameContainer.setShowFPS(false);
             //appGameContainer.setFullscreen(true);
             appGameContainer.setDisplayMode(width, height, fullscreen);
+            
             Logger.getLogger(this.getClass()).info("Display: " + width + "x" + height + " F:" + fullscreen);
             /*if (!fullscreen) {
              appGameContainer.setDisplayMode(width, height, false);

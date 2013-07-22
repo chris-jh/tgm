@@ -6,6 +6,7 @@ package com.tgm.gui.panels;
 
 import com.tgm.gui.components.Image;
 import com.tgm.gui.components.Panel;
+import com.tgm.gui.components.SolidBackground;
 import com.tgm.gui.enums.Command;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +24,10 @@ import org.newdawn.slick.SlickException;
 public class GamesLibraryPanel extends Panel {
 
     private Image artImage;
+    private SolidBackground libraryBackgroundImage;
     private LibraryPanel recentlyPlayedPanel;
     private LibraryPanel recentlyAddedPanel;
-    private LibraryPanel topTenPanel;
+    //private LibraryPanel topTenPanel;
     private LibraryPanel currentPanel;
     private int librarySelected = 0;
     private List<String> artList = new ArrayList<String>();
@@ -59,7 +61,7 @@ public class GamesLibraryPanel extends Panel {
 
         recentlyPlayedPanel.setFocused(false);
         recentlyAddedPanel.setFocused(false);
-        topTenPanel.setFocused(false);
+        //topTenPanel.setFocused(false);
 
         if (focused) {
             currentPanel.setFocused(true);
@@ -90,19 +92,26 @@ public class GamesLibraryPanel extends Panel {
 
     private void initGamePanel(GameContainer gc) {
         float panelX = 0;
+        float panelY = 0;
         float panelWidth = this.getWidth();
         float panelHeight = this.getHeight() / 3f;
+        float panelYMargin = panelHeight * 0.30f;
 
-        artImage = (Image) add(new Image("artImage", artList.get(0), 0, 0, this.getWidth(), this.getHeight()));
+        panelY = ((this.getHeight() - panelHeight) - panelYMargin) / 3f;
+
+        artImage = (Image) add(new Image("artImage", artList.get(0), 0 - this.getX(), 0 - this.getY(), this.getWidth() + this.getX(), this.getHeight() + this.getY()));
         artImage.setFadeColor(new Color(255, 255, 255, 255));
-        artImage.setFadeAlpha(0.4f);
-        artImage.setFixedRatio(true);
+        artImage.setFadeAlpha(0.0f);
+        //artImage.setFixedRatio(true);
 
-        
-        recentlyPlayedPanel = (LibraryPanel) add(new LibraryPanel("recentlyPlayedPanel", "Recently Played", LibraryPanel.TOP, panelX, 0, panelWidth, panelHeight));
-        recentlyAddedPanel = (LibraryPanel) add(new LibraryPanel("recentlyAddedPanel", "Recently Added", LibraryPanel.MID, panelX, recentlyPlayedPanel.getHeight(), panelWidth, panelHeight));
-        topTenPanel = (LibraryPanel) add(new LibraryPanel("topTenPanel", "Top Ten", LibraryPanel.MID, panelX, recentlyPlayedPanel.getHeight() + recentlyAddedPanel.getHeight(), panelWidth, panelHeight));
+        libraryBackgroundImage = (SolidBackground) add(new SolidBackground("libraryBackgroundImage", new Color(255,255,255,170), panelX, panelY, panelWidth, panelHeight));
+
+
+        recentlyPlayedPanel = (LibraryPanel) add(new LibraryPanel("recentlyPlayedPanel", "Recently Played", LibraryPanel.TOP, panelX, panelY, panelWidth, panelHeight));
+        recentlyAddedPanel = (LibraryPanel) add(new LibraryPanel("recentlyAddedPanel", "Recently Added", LibraryPanel.MID, panelX, panelY + recentlyPlayedPanel.getHeight(), panelWidth, panelHeight));
+        //topTenPanel = (LibraryPanel) add(new LibraryPanel("topTenPanel", "Top Ten", LibraryPanel.MID, panelX, recentlyPlayedPanel.getHeight() + recentlyAddedPanel.getHeight(), panelWidth, panelHeight));
         currentPanel = recentlyPlayedPanel;
+        libraryBackgroundImage.setHeight(recentlyPlayedPanel.getHeight() + recentlyAddedPanel.getHeight());
     }
 
     private void gameSelected() {
@@ -120,24 +129,24 @@ public class GamesLibraryPanel extends Panel {
             currentPanel = recentlyPlayedPanel;
         } else if (librarySelected == 1) {
             currentPanel = recentlyAddedPanel;
-        } else if (librarySelected == 2) {
-            currentPanel = topTenPanel;
-        }
+        }/* else if (librarySelected == 2) {
+         currentPanel = topTenPanel;
+         }*/
     }
 
     private void gameDown() {
         librarySelected++;
-        if (librarySelected > 3) {
-            librarySelected = 2;
+        if (librarySelected > 2) {
+            librarySelected = 1;
         }
 
         if (librarySelected == 0) {
             currentPanel = recentlyPlayedPanel;
         } else if (librarySelected == 1) {
             currentPanel = recentlyAddedPanel;
-        } else if (librarySelected == 2) {
-            currentPanel = topTenPanel;
-        }
+        } /*else if (librarySelected == 2) {
+         currentPanel = topTenPanel;
+         }*/
     }
 
     private void gameLeft() {
