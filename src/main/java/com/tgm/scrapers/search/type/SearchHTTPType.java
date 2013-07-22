@@ -21,8 +21,8 @@ import org.apache.log4j.Logger;
 public abstract class SearchHTTPType implements SearchType {
 
     private String urlString = "";
-
-    public SearchResults search(String game, String platform) {
+    
+    private SearchResults performSearch(String searchString) {
         SearchResults searchResults;
         URL url;
         InputStream inputStream;
@@ -31,7 +31,7 @@ public abstract class SearchHTTPType implements SearchType {
         try {
             searchResults = new SearchResults();
             try {
-                url = new URL(urlString + "?name=" + game + "&platform=" + platform);
+                url = new URL(searchString);
                 inputStream = url.openConnection().getInputStream();
                 jaxbContext = JAXBContext.newInstance(SearchResults.class);
                 jaxbUnmarshaller = jaxbContext.createUnmarshaller();
@@ -54,41 +54,18 @@ public abstract class SearchHTTPType implements SearchType {
         }
     }
 
+    public SearchResults search(String game, String platform) {
+        String searchString = urlString + "?name=" + game + "&platform=" + platform;
+        return performSearch(searchString);
+    }
+
     public SearchResults search(String game, long platformId) {
-        SearchResults searchResults = new SearchResults();
-        try {
-            URL url = new URL(urlString + "?name=" + game + "&platformid=" + platformId);
-            InputStream inputStream = url.openConnection().getInputStream();
-            JAXBContext jaxbContext = JAXBContext.newInstance(SearchResults.class);
-            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            searchResults = (SearchResults) jaxbUnmarshaller.unmarshal(inputStream);
-        } catch (MalformedURLException mue) {
-            System.err.println(mue);
-        } catch (IOException ioe) {
-            System.err.println(ioe);
-        } catch (JAXBException jaxbe) {
-            System.err.println(jaxbe);
-        }
-        System.out.println(searchResults);
-        return searchResults;
+        String searchString = urlString + "?name=" + game + "&platformid=" + platformId;
+        return performSearch(searchString);
     }
 
     public SearchResults search(String game) {
-        SearchResults searchResults = new SearchResults();
-        try {
-            URL url = new URL(urlString + "?name=" + game);
-            InputStream inputStream = url.openConnection().getInputStream();
-            JAXBContext jaxbContext = JAXBContext.newInstance(SearchResults.class);
-            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            searchResults = (SearchResults) jaxbUnmarshaller.unmarshal(inputStream);
-        } catch (MalformedURLException mue) {
-            System.err.println(mue);
-        } catch (IOException ioe) {
-            System.err.println(ioe);
-        } catch (JAXBException jaxbe) {
-            System.err.println(jaxbe);
-        }
-        System.out.println(searchResults);
-        return searchResults;
+        String searchString = urlString + "?name=" + game;
+        return performSearch(searchString);
     }
 }
