@@ -21,6 +21,7 @@ public class Image extends AbstractComponent {
     private boolean update = false;
     org.newdawn.slick.Image background;
     private Color fadeColor;
+    private Color imageFilterColor;
     private boolean fade = false;
     private boolean fadeIn = false;
     private boolean fadeOut = false;
@@ -114,7 +115,7 @@ public class Image extends AbstractComponent {
     public void render(GameContainer gc, Graphics g) throws SlickException {
         if (isVisible()) {
             if (background != null) {
-                background.draw(getX(), getY() + fixedY, getWidth(), fixedHeight);
+                background.draw(getX(), getY() + fixedY, getWidth(), fixedHeight, imageFilterColor);
 
                 if (fadeColor != null) {
                     Color old = g.getColor();
@@ -210,5 +211,12 @@ public class Image extends AbstractComponent {
     public void setFixedRatio(boolean fixedRatio) {
         this.fixedRatio = fixedRatio;
         updateFixedHeight();
+    }
+
+    /**
+     * @param imageFilterColor the imageFilterColor to set
+     */
+    public void setImageFilterColor(Color imageFilterColor) {
+        this.imageFilterColor = imageFilterColor;
     }
 }
