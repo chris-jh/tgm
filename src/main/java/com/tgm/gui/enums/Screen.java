@@ -10,6 +10,7 @@ package com.tgm.gui.enums;
  */
 public enum Screen {
     MAIN,
+    PLATFORM,
     SCAN_FOR_GAMES,
     NEXT
 }

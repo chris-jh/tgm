@@ -17,14 +17,12 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.springframework.stereotype.Component;
 
 /**
  *
  * @author christopher
  */
-@Component
-public class MenuSidePanel extends Panel {
+public class PlatformMenuPanel extends Panel {
 
     private float textSpinSpeed = 0.02f;
     private float textScaleValue = 1.0f;
@@ -43,6 +41,9 @@ public class MenuSidePanel extends Panel {
     //-----------------
     private Color white = Color.white;
     private float marginSelectionTop = marginTop - 2;
+    private Label titleLabel;
+    private Label subTitleLabel;
+    private Platform platform;
 
     private void initMenu() {
         Logger.getLogger(this.getClass()).info("initMenu 1");
@@ -52,7 +53,7 @@ public class MenuSidePanel extends Panel {
         float normalWidth = this.getWidth() / 1.05f;
         float selectionWidth = this.getWidth() / 1.10f;
         float textWidth = this.getWidth() / 1.20f;
-        float selcetionMargin = (normalWidth - selectionWidth) / 2f;
+        float selectionMargin = (normalWidth - selectionWidth) / 2f;
 
         float menuSelectionHeight = getHeight() / menuHeightPercentage;
         float menuFontHeight = getHeight() / 31.5f;
@@ -61,6 +62,8 @@ public class MenuSidePanel extends Panel {
         int i = 0;
         int menuFontSize = (int) (getHeight() / 37.5);
         int titleFontSize = (int) (getHeight() / 27.2);
+        int subTitleFontSize = (int) (getHeight() / 34.5);
+
 
         textMarginLeft = (normalWidth - textWidth) / 2f;
         menuInsert = getHeight() / 24f;
@@ -71,22 +74,36 @@ public class MenuSidePanel extends Panel {
         menuSelectionMovement = menuSelectionPosition;
         menuDisplayedIndex = 0;
 
-        add(new Label("menuTitleLabel", "The Games Menu", 0, 10, selectionWidth, 50, Label.CENTER, "Arial", Font.BOLD, titleFontSize, white, true));
+        titleLabel = (Label) add(new Label("menuTitleLabel", "The Games Menu", 0, 10, selectionWidth, 50, Label.CENTER, "Arial", Font.BOLD, titleFontSize, white, true));
+        subTitleLabel = (Label) add(new Label("menuSubTitleLabel", "SubTitle", 0, 60, selectionWidth, 50, Label.CENTER, "Arial", Font.BOLD, subTitleFontSize, white, true));
 
-        add(new Image("menuSelection", "images/menu_selection.png", selcetionMargin, menuSelectionPosition, selectionWidth, menuSelectionHeight));
 
-        add(new Label("menuLabel" + i, "Scan For Games", textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true));
+        add(new Image("menuSelection", "images/menu_selection.png", selectionMargin, menuSelectionPosition, selectionWidth, menuSelectionHeight));
 
-        for (Platform platform : Platform.values()) {
-            marginMenu += menuInsert;
-            i++;
-            add(new Label("menuLabel" + i, WordUtils.capitalize(StringUtils.replace(platform.name(), "_", " ").toLowerCase()), textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true));
-        }
-        marginMenu += menuInsert;
-        i++;
-        add(new Label("menuLabel" + i, "Quit", textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true));
+        /*
+
+         add(new Label("menuLabel" + i, "Scan For Games", textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true));
+
+         for (Platform platform : Platform.values()) {
+         marginMenu += menuInsert;
+         i++;
+         add(new Label("menuLabel" + i, WordUtils.capitalize(StringUtils.replace(platform.name(), "_", " ").toLowerCase()), textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true));
+         }
+         marginMenu += menuInsert;
+         i++;
+         add(new Label("menuLabel" + i, "Quit", textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true));
+         */
+
+        add(new Label("menuLabel0", "All Games", textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true));
+        add(new Label("menuLabel1", "Recently Added", textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true));
+        add(new Label("menuLabel2", "Recently Played", textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true));
+        add(new Label("menuLabel3", "Most Played", textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true));
+        add(new Label("menuLabel4", "Top Rated", textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true));
+        add(new Label("menuLabel5", "Back", textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true));
+
+
         Logger.getLogger(this.getClass()).info("initMenu 2");
-        menuSize = i + 1;
+        menuSize = 6;
 
         Logger.getLogger(this.getClass()).info("initMenu 3");
 
@@ -104,16 +121,19 @@ public class MenuSidePanel extends Panel {
     @Override
     public void update(GameContainer gc, int i) throws SlickException {
         super.update(gc, i);
+        subTitleLabel.setY(titleLabel.getPlainY() + titleLabel.getTextHeight() + 2);
+
+        
         //Logger.getLogger(this.getClass()).info("UPDATE MENU PANEL "+System.currentTimeMillis());
 
 //        updateTitle();
         updateMenuSelection();
         boolean r = false;
-        if (gc.getInput().isKeyPressed(Input.KEY_RIGHT)){
+        if (gc.getInput().isKeyPressed(Input.KEY_RIGHT)) {
             r = true;
-            Logger.getLogger(this.getClass()).info("KEY RIGHT: on focus "+focused);
+            Logger.getLogger(this.getClass()).info("KEY RIGHT: on focus " + focused);
         }
-        
+
         if (focused) {
 
             if (gc.getInput().isKeyPressed(Input.KEY_RETURN)) {
@@ -125,42 +145,17 @@ public class MenuSidePanel extends Panel {
             if (gc.getInput().isKeyPressed(Input.KEY_DOWN)) {
                 menuDown();
             }
-            if ((gc.getInput().isKeyPressed(Input.KEY_RIGHT)) || r ) {
+            if ((gc.getInput().isKeyPressed(Input.KEY_RIGHT)) || r) {
                 menuRight();
             }
+            if (gc.getInput().isKeyPressed(Input.KEY_ESCAPE)) {
+                menuGoBack();
+            }
+
             gc.getInput().clearKeyPressedRecord();
         }
     }
 
-//    private void updateTitle() {
-//        if (pause) {
-//            if (System.currentTimeMillis() > pauseTime) {
-//                pause = false;
-//            }
-//        } else {
-//            if (dir == 0) {
-//                textScaleValue += textSpinSpeed;
-//                if (textScaleValue > 1.0) {
-//                    dir = 1;
-//                    pause = true;
-//                    pauseTime = System.currentTimeMillis() + 2000;
-//                } else {
-//                    pauseTime = System.currentTimeMillis() + 50;
-//                    pause = true;
-//
-//                }
-//            } else if (dir == 1) {
-//                textScaleValue -= textSpinSpeed;
-//                pauseTime = System.currentTimeMillis() + 50;
-//                pause = true;
-//
-//                if (textScaleValue < -1.0) {
-//                    dir = 0;
-//                }
-//            }
-//        }
-//        getComponent("menuTitleLabel").setSx(textScaleValue);
-//    }
     private void menuUp() {
         if ((menuSelectionIndex - 1) >= 0) {
             menuSelectionIndex -= 1;
@@ -212,25 +207,27 @@ public class MenuSidePanel extends Panel {
             getComponent("menuLabel" + (i + menuDisplayedIndex)).setVisible(isFocused());
         }
 
-        if (!isFocused()){
+        if (!isFocused()) {
             getComponent("menuLabel" + menuSelectionIndex).setVisible(true);
         }
 
     }
 
     private void menuSelected() {
-        int quitIndex = menuSize - 1;
+        int backIndex = menuSize - 1;
         if (menuSelectionIndex == 0) {
-            parentScreen.command(Command.SCAN_FOR_GAMES);
-        } else if (menuSelectionIndex == quitIndex) {
-            parentScreen.command(Command.QUIT);
-        } else {
-            parentScreen.command(Command.GAMEPANEL_UPDATE);
+            //parentScreen.command(Command.SCAN_FOR_GAMES);
+        } else if (menuSelectionIndex == backIndex) {
+            parentScreen.command(Command.GO_BACK);
         }
     }
 
+    private void menuGoBack() {
+        parentScreen.command(Command.GO_BACK);
+    }
+
     private void menuRight() {
-        Logger.getLogger(this.getClass()).info("MENU RIGHT "+menuSelectionIndex);
+        Logger.getLogger(this.getClass()).info("MENU RIGHT " + menuSelectionIndex);
         int quitIndex = menuSize - 1;
         if (menuSelectionIndex == 0) {
         } else if (menuSelectionIndex == quitIndex) {
@@ -238,5 +235,20 @@ public class MenuSidePanel extends Panel {
             parentScreen.command(Command.GAMEPANEL_FOCUS);
         }
 
+    }
+
+    /**
+     * @return the platform
+     */
+    public Platform getPlatform() {
+        return platform;
+    }
+
+    /**
+     * @param platform the platform to set
+     */
+    public void setPlatform(Platform platform) {
+        this.platform = platform;
+        subTitleLabel.setText(WordUtils.capitalize(StringUtils.replace(platform.name(), "_", " ").toLowerCase()));
     }
 }

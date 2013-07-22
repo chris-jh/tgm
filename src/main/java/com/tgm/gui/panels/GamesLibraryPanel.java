@@ -27,7 +27,6 @@ public class GamesLibraryPanel extends Panel {
     private SolidBackground libraryBackgroundImage;
     private LibraryPanel recentlyPlayedPanel;
     private LibraryPanel recentlyAddedPanel;
-    //private LibraryPanel topTenPanel;
     private LibraryPanel currentPanel;
     private int librarySelected = 0;
     private List<String> artList = new ArrayList<String>();
@@ -61,7 +60,6 @@ public class GamesLibraryPanel extends Panel {
 
         recentlyPlayedPanel.setFocused(false);
         recentlyAddedPanel.setFocused(false);
-        //topTenPanel.setFocused(false);
 
         if (focused) {
             currentPanel.setFocused(true);
@@ -80,6 +78,9 @@ public class GamesLibraryPanel extends Panel {
             }
             if (gc.getInput().isKeyPressed(Input.KEY_RIGHT)) {
                 gameRight();
+            }
+            if (gc.getInput().isKeyPressed(Input.KEY_ESCAPE)){
+                parentScreen.command(Command.MENU_FOCUS);
             }
             gc.getInput().clearKeyPressedRecord();
         }
@@ -102,15 +103,13 @@ public class GamesLibraryPanel extends Panel {
         artImage = (Image) add(new Image("artImage", artList.get(0), 0 - this.getX(), 0 - this.getY(), this.getWidth() + this.getX(), this.getHeight() + this.getY()));
         artImage.setFadeColor(new Color(255, 255, 255, 255));
         artImage.setFadeAlpha(0.0f);
-        //artImage.setFixedRatio(true);
 
         libraryBackgroundImage = (SolidBackground) add(new SolidBackground("libraryBackgroundImage", new Color(255,255,255,170), panelX, panelY, panelWidth, panelHeight));
 
-
         recentlyPlayedPanel = (LibraryPanel) add(new LibraryPanel("recentlyPlayedPanel", "Recently Played", LibraryPanel.TOP, panelX, panelY, panelWidth, panelHeight));
-        recentlyAddedPanel = (LibraryPanel) add(new LibraryPanel("recentlyAddedPanel", "Recently Added", LibraryPanel.MID, panelX, panelY + recentlyPlayedPanel.getHeight(), panelWidth, panelHeight));
-        //topTenPanel = (LibraryPanel) add(new LibraryPanel("topTenPanel", "Top Ten", LibraryPanel.MID, panelX, recentlyPlayedPanel.getHeight() + recentlyAddedPanel.getHeight(), panelWidth, panelHeight));
+        recentlyAddedPanel = (LibraryPanel) add(new LibraryPanel("recentlyAddedPanel", "Recently Added", LibraryPanel.TOP, panelX, panelY + recentlyPlayedPanel.getHeight(), panelWidth, panelHeight));
         currentPanel = recentlyPlayedPanel;
+
         libraryBackgroundImage.setHeight(recentlyPlayedPanel.getHeight() + recentlyAddedPanel.getHeight());
     }
 
@@ -129,9 +128,7 @@ public class GamesLibraryPanel extends Panel {
             currentPanel = recentlyPlayedPanel;
         } else if (librarySelected == 1) {
             currentPanel = recentlyAddedPanel;
-        }/* else if (librarySelected == 2) {
-         currentPanel = topTenPanel;
-         }*/
+        }
     }
 
     private void gameDown() {
@@ -144,9 +141,7 @@ public class GamesLibraryPanel extends Panel {
             currentPanel = recentlyPlayedPanel;
         } else if (librarySelected == 1) {
             currentPanel = recentlyAddedPanel;
-        } /*else if (librarySelected == 2) {
-         currentPanel = topTenPanel;
-         }*/
+        }
     }
 
     private void gameLeft() {

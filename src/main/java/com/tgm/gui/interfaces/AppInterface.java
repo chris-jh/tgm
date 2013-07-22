@@ -16,10 +16,13 @@ public interface AppInterface {
     public void processNextScreen(Screen scene);
     public void quit();
     
+    
     public int getWidth();
     public int getHeight();
     
     public ScreenInterface getCurrentScreenInterface();
+    public ScreenInterface getScreenInterface(Screen screen);
 
+    
     
 }

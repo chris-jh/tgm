@@ -48,9 +48,9 @@ public class Engine extends BasicGame {
 
     @Override
     public void update(GameContainer gc, int i) throws SlickException {
-        if (gc.getInput().isKeyPressed(Input.KEY_ESCAPE)) {
+        /*if (gc.getInput().isKeyPressed(Input.KEY_ESCAPE)) {
             System.exit(0);
-        }
+        }*/
         if (screen != null) {
             screen.update(gc, i);
         }
