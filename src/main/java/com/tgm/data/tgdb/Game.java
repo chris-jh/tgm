@@ -4,6 +4,9 @@
  */
 package com.tgm.data.tgdb;
 
+import com.tgm.data.tgdb.images.BoxArt;
+import com.tgm.data.tgdb.images.FanArt;
+import com.tgm.scrapers.interfaces.GameDetailsInterface;
 import com.tgm.data.tgdb.images.Images;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -17,7 +20,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "Game")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Game {
+public class Game implements GameDetailsInterface {
 
     @XmlElement(name = "id")
     private Long id;
@@ -31,15 +34,13 @@ public class Game {
     private String platform;
     @XmlElement(name = "Overview")
     private String overview;
-    
     @XmlElement(name = "Images")
     private List<Images> gameImages;
-    
-    
 
     /**
      * @return the id
      */
+    @Override
     public Long getId() {
         return id;
     }
@@ -54,6 +55,7 @@ public class Game {
     /**
      * @return the gameTitle
      */
+    @Override
     public String getGameTitle() {
         return gameTitle;
     }
@@ -68,6 +70,7 @@ public class Game {
     /**
      * @return the releaseDate
      */
+    @Override
     public String getReleaseDate() {
         return releaseDate;
     }
@@ -82,6 +85,7 @@ public class Game {
     /**
      * @return the platform
      */
+    @Override
     public String getPlatform() {
         return platform;
     }
@@ -96,6 +100,7 @@ public class Game {
     /**
      * @return the platformId
      */
+    @Override
     public String getPlatformId() {
         return platformId;
     }
@@ -110,6 +115,7 @@ public class Game {
     /**
      * @return the overview
      */
+    @Override
     public String getOverview() {
         return overview;
     }
@@ -133,5 +139,37 @@ public class Game {
      */
     public void setGameImages(List<Images> gameImages) {
         this.gameImages = gameImages;
+    }
+
+    @Override
+    public String getBoxArt() {
+        if (!getGameImages().isEmpty()) {
+            for (Images images : gameImages) {
+                for (BoxArt boxArt : images.getBoxArt()) {
+                    if (boxArt.getSide().equals("front")) {
+                        return boxArt.getValue();
+                    }
+                }
+            }
+        }
+        return "blankbox.png";
+    }
+
+    @Override
+    public String getFanArt() {
+        if (!getGameImages().isEmpty()) {
+            for (Images images : gameImages) {
+                for (FanArt fanArt : images.getFanArt()) {
+                    return fanArt.getOriginal();
+                }
+            }
+        }
+        return "blankart.png";
+    }
+
+    @Override
+    public String getScreenShot() {
+        return "blankscreenshot.png";
+
     }
 }
