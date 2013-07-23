@@ -4,10 +4,13 @@
  */
 package com.tgm.data.tgdb;
 
+import com.tgm.data.tgdb.images.Banner;
 import com.tgm.data.tgdb.images.BoxArt;
+import com.tgm.data.tgdb.images.ClearLogo;
 import com.tgm.data.tgdb.images.FanArt;
 import com.tgm.scrapers.interfaces.GameDetailsInterface;
 import com.tgm.data.tgdb.images.Images;
+import com.tgm.data.tgdb.images.Screenshot;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -34,6 +37,16 @@ public class Game implements GameDetailsInterface {
     private String platform;
     @XmlElement(name = "Overview")
     private String overview;
+    @XmlElement(name = "Rating")
+    private String rating;
+    @XmlElement(name = "Publisher")
+    private String publisher;
+    @XmlElement(name = "Developer")
+    private String developer;
+    @XmlElement(name = "Players")
+    private String players;
+    @XmlElement(name = "Co-op")
+    private String coOp;
     @XmlElement(name = "Images")
     private List<Images> gameImages;
 
@@ -145,9 +158,9 @@ public class Game implements GameDetailsInterface {
     public String getBoxArt() {
         if (!getGameImages().isEmpty()) {
             for (Images images : gameImages) {
-                for (BoxArt boxArt : images.getBoxArt()) {
-                    if (boxArt.getSide().equals("front")) {
-                        return boxArt.getValue();
+                for (BoxArt image : images.getBoxArt()) {
+                    if (image.getSide().equals("front")) {
+                        return image.getValue();
                     }
                 }
             }
@@ -159,8 +172,8 @@ public class Game implements GameDetailsInterface {
     public String getFanArt() {
         if (!getGameImages().isEmpty()) {
             for (Images images : gameImages) {
-                for (FanArt fanArt : images.getFanArt()) {
-                    return fanArt.getOriginal();
+                for (FanArt image : images.getFanArt()) {
+                    return image.getOriginal();
                 }
             }
         }
@@ -169,7 +182,114 @@ public class Game implements GameDetailsInterface {
 
     @Override
     public String getScreenShot() {
+        if (!getGameImages().isEmpty()) {
+            for (Images images : gameImages) {
+                for (Screenshot image : images.getScreenshot()) {
+                    return image.getOriginal();
+                }
+            }
+        }
         return "blankscreenshot.png";
+    }
+    
+    @Override
+    public String getBanner() {
+        if (!getGameImages().isEmpty()) {
+            for (Images images : gameImages) {
+                for (Banner image : images.getBanner()) {
+                    return image.getValue();
+                }
+            }
+        }
+        return "blankbanner.png";
+    }
+    
+    @Override
+    public String getClearLogo() {
+        if (!getGameImages().isEmpty()) {
+            for (Images images : gameImages) {
+                for (ClearLogo image : images.getClearLogo()) {
+                    return image.getValue();
+                }
+            }
+        }
+        return "blanklogo.png";
+    }
 
+        
+    
+    /**
+     * @return the rating
+     */
+    @Override
+    public String getRating() {
+        return rating;
+    }
+
+    /**
+     * @param rating the rating to set
+     */
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
+
+    /**
+     * @return the publisher
+     */
+    @Override
+    public String getPublisher() {
+        return publisher;
+    }
+
+    /**
+     * @param publisher the publisher to set
+     */
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    /**
+     * @return the developer
+     */
+    @Override
+    public String getDeveloper() {
+        return developer;
+    }
+
+    /**
+     * @param developer the developer to set
+     */
+    public void setDeveloper(String developer) {
+        this.developer = developer;
+    }
+
+    /**
+     * @return the players
+     */
+    @Override
+    public String getPlayers() {
+        return players;
+    }
+
+    /**
+     * @param players the players to set
+     */
+    public void setPlayers(String players) {
+        this.players = players;
+    }
+
+    /**
+     * @return the coOp
+     */
+    @Override
+    public String getCoOp() {
+        return coOp;
+    }
+
+    /**
+     * @param coOp the coOp to set
+     */
+    public void setCoOp(String coOp) {
+        this.coOp = coOp;
     }
 }

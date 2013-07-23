@@ -22,6 +22,13 @@ public class Images {
     private List<BoxArt> boxArt;
     @XmlElement(name = "fanart")
     private List<FanArt> fanArt;
+    @XmlElement(name = "banner")
+    private List<Banner> banner;
+    @XmlElement(name = "screenshot")
+    private List<Screenshot> screenshot;
+    @XmlElement(name = "clearlogo")
+    private List<ClearLogo> clearLogo;
+    
 
     /**
      * @return the boxArt
@@ -51,5 +58,45 @@ public class Images {
         this.fanArt = fanArt;
     }
 
-    
+    /**
+     * @return the banner
+     */
+    public List<Banner> getBanner() {
+        return banner;
+    }
+
+    /**
+     * @param banner the banner to set
+     */
+    public void setBanner(List<Banner> banner) {
+        this.banner = banner;
+    }
+
+    /**
+     * @return the screenshot
+     */
+    public List<Screenshot> getScreenshot() {
+        return screenshot;
+    }
+
+    /**
+     * @param screenshot the screenshot to set
+     */
+    public void setScreenshot(List<Screenshot> screenshot) {
+        this.screenshot = screenshot;
+    }
+
+    /**
+     * @return the clearLogo
+     */
+    public List<ClearLogo> getClearLogo() {
+        return clearLogo;
+    }
+
+    /**
+     * @param clearLogo the clearLogo to set
+     */
+    public void setClearLogo(List<ClearLogo> clearLogo) {
+        this.clearLogo = clearLogo;
+    }
 }

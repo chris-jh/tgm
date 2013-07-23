@@ -10,8 +10,13 @@ package com.tgm.scrapers.interfaces;
  */
 public interface ScraperInterface<E extends ResultInterface> {
 
+    public ResultInterface quickSearch(String game, String platform);
+
+    public ResultInterface fullSearch(String game, String platform);
+
+    public ResultInterface searchById(Long id);
+
     public ResultInterface search(String game, String platform);
 
     public ResultInterface performSearch(String searchString);
-    
 }

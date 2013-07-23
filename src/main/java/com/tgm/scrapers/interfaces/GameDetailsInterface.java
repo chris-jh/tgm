@@ -10,41 +10,35 @@ package com.tgm.scrapers.interfaces;
  */
 public interface GameDetailsInterface {
 
-    /**
-     * @return the gameTitle
-     */
-    String getGameTitle();
+    public String getGameTitle();
 
-    /**
-     * @return the id
-     */
-    Long getId();
+    public Long getId();
 
-    /**
-     * @return the overview
-     */
-    String getOverview();
+    public String getOverview();
 
-    /**
-     * @return the platform
-     */
-    String getPlatform();
+    public String getPlatform();
 
-    /**
-     * @return the platformId
-     */
-    String getPlatformId();
+    public String getPlatformId();
 
-    /**
-     * @return the releaseDate
-     */
-    String getReleaseDate();
+    public String getReleaseDate();
+
+    public String getBoxArt();
+
+    public String getFanArt();
+
+    public String getScreenShot();
     
-    String getBoxArt();
+    public String getBanner();
     
-    String getFanArt();
-    
-    String getScreenShot();
-    
-    
+    public String getClearLogo();
+
+    public String getRating();
+
+    public String getPublisher();
+
+    public String getDeveloper();
+
+    public String getPlayers();
+
+    public String getCoOp();
 }

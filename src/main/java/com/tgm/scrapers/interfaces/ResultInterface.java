@@ -12,6 +12,8 @@ import java.util.List;
  */
 public interface ResultInterface<E extends GameDetailsInterface> {
     
+    public String getBaseImgUrl();
+    
     /**
      * @return the id
      */
