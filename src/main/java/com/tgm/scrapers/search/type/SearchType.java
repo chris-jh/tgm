@@ -14,4 +14,6 @@ public interface SearchType {
     public SearchResults search(String game, String platform);
     public SearchResults search(String game, long platformId);
     public SearchResults search(String game);
+    
+    public String getArtUrl();
 }

@@ -12,7 +12,13 @@ import com.tgm.scrapers.search.type.SearchHTTPType;
  */
 public class SearchTheGamesDBNet extends SearchHTTPType implements SearchInterface {
 
-    private String urlString = "http://thegamesdb.net/api/GetGamesList.php";
+    {
+        urlString = "http://thegamesdb.net/api/GetGame.php";
+    }
+
+    public String getArtUrl() {
+        return "http://thegamesdb.net/banners";
+    }
 
     public SearchResults search(String game, String platform) {
         return super.search(game, platform);

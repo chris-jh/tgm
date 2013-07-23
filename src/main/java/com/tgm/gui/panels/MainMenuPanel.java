@@ -4,12 +4,18 @@
  */
 package com.tgm.gui.panels;
 
+import com.tgm.config.PlatformConfig;
 import com.tgm.enums.Platform;
 import com.tgm.gui.components.Image;
 import com.tgm.gui.components.Label;
+import com.tgm.gui.components.MenuLabel;
 import com.tgm.gui.components.Panel;
 import com.tgm.gui.enums.Command;
+import com.tgm.resources.TgmResource;
 import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
@@ -17,6 +23,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -37,10 +44,12 @@ public class MainMenuPanel extends Panel {
     private float menuSelectionMovement = 1;
     private int maxNumberMenuItemsDisplayed = 15;
     private int menuDisplayedIndex = 0;
-    private int menuSize = 0;
     //-----------------
     private Color white = Color.white;
     private float marginSelectionTop = marginTop - 2;
+    @Autowired
+    private TgmResource tgmResource;
+    private List<MenuLabel> menuList = new ArrayList<MenuLabel>();
 
     private void initMenu() {
         Logger.getLogger(this.getClass()).info("initMenu 1");
@@ -73,23 +82,23 @@ public class MainMenuPanel extends Panel {
 
         add(new Image("menuSelection", "images/menu_selection.png", selcetionMargin, menuSelectionPosition, selectionWidth, menuSelectionHeight));
 
-        add(new Label("menuLabel" + i, "Scan For Games", textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true));
+        menuList.add((MenuLabel) add(new MenuLabel(i, "SCAN_FOR_GAMES", "menuLabel" + i, "Scan For Games", textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true)));
 
-        for (Platform platform : Platform.values()) {
+        for (Map.Entry<Platform, PlatformConfig> entry : tgmResource.getPlatformConfigs().entrySet()) {
             marginMenu += menuInsert;
             i++;
-            add(new Label("menuLabel" + i, WordUtils.capitalize(StringUtils.replace(platform.name(), "_", " ").toLowerCase()), textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true));
+            menuList.add((MenuLabel) add(new MenuLabel(i, entry.getKey().name(), "menuLabel" + i, WordUtils.capitalize(StringUtils.replace(entry.getKey().name(), "_", " ").toLowerCase()), textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true)));
         }
+
         marginMenu += menuInsert;
         i++;
-        add(new Label("menuLabel" + i, "Quit", textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true));
+        menuList.add((MenuLabel) add(new MenuLabel(i, "QUIT", "menuLabel" + i, "Quit", textMarginLeft, marginMenu, textWidth, menuSelectionHeight, Label.CENTER, "Arial", Font.BOLD, menuFontSize, white, true)));
         Logger.getLogger(this.getClass()).info("initMenu 2");
-        menuSize = i + 1;
 
         Logger.getLogger(this.getClass()).info("initMenu 3");
 
-        if (maxNumberMenuItemsDisplayed > menuSize) {
-            maxNumberMenuItemsDisplayed = menuSize;
+        if (maxNumberMenuItemsDisplayed > menuList.size()) {
+            maxNumberMenuItemsDisplayed = menuList.size();
         }
     }
 
@@ -134,35 +143,6 @@ public class MainMenuPanel extends Panel {
         }
     }
 
-//    private void updateTitle() {
-//        if (pause) {
-//            if (System.currentTimeMillis() > pauseTime) {
-//                pause = false;
-//            }
-//        } else {
-//            if (dir == 0) {
-//                textScaleValue += textSpinSpeed;
-//                if (textScaleValue > 1.0) {
-//                    dir = 1;
-//                    pause = true;
-//                    pauseTime = System.currentTimeMillis() + 2000;
-//                } else {
-//                    pauseTime = System.currentTimeMillis() + 50;
-//                    pause = true;
-//
-//                }
-//            } else if (dir == 1) {
-//                textScaleValue -= textSpinSpeed;
-//                pauseTime = System.currentTimeMillis() + 50;
-//                pause = true;
-//
-//                if (textScaleValue < -1.0) {
-//                    dir = 0;
-//                }
-//            }
-//        }
-//        getComponent("menuTitleLabel").setSx(textScaleValue);
-//    }
     private void menuUp() {
         if ((menuSelectionIndex - 1) >= 0) {
             menuSelectionIndex -= 1;
@@ -173,19 +153,21 @@ public class MainMenuPanel extends Panel {
         }
 
         Logger.getLogger(this.getClass()).info("POSITION: " + menuSelectionIndex);
+        updateGamePanel();
     }
 
     private void menuDown() {
-        if ((menuSelectionIndex + 1) < menuSize) {
+        if ((menuSelectionIndex + 1) < menuList.size()) {
             menuSelectionIndex += 1;
         }
 
         if (menuSelectionIndex >= maxNumberMenuItemsDisplayed) {
-            if ((menuDisplayedIndex + maxNumberMenuItemsDisplayed) < menuSize) {
+            if ((menuDisplayedIndex + maxNumberMenuItemsDisplayed) < menuList.size()) {
                 menuDisplayedIndex++;
             }
         }
         Logger.getLogger(this.getClass()).info("POSITION: " + menuSelectionIndex);
+        updateGamePanel();
     }
 
     private void updateMenuSelection() {
@@ -204,25 +186,25 @@ public class MainMenuPanel extends Panel {
 
         getComponent("menuSelection").setY(menuSelectionMovement);
 
-        for (int i = 0; i < menuSize; i++) {
-            getComponent("menuLabel" + i).setVisible(false);
+        for (int i = 0; i < menuList.size(); i++) {
+            menuList.get(i).setVisible(false);
         }
 
         for (int i = 0; i < maxNumberMenuItemsDisplayed; i++) {
             float p = marginTop + (i * menuInsert);
-            getComponent("menuLabel" + (i + menuDisplayedIndex)).setY(p);
-            getComponent("menuLabel" + (i + menuDisplayedIndex)).setVisible(isFocused());
+            menuList.get(i + menuDisplayedIndex).setY(p);
+            menuList.get(i + menuDisplayedIndex).setVisible(isFocused());
         }
 
         if (!isFocused()) {
-            getComponent("menuLabel" + menuSelectionIndex).setVisible(true);
+            menuList.get(menuSelectionIndex).setVisible(true);
         }
 
     }
 
     private void menuSelected() {
         Logger.getLogger(this.getClass()).info("MENU SELECTED AN ITEM");
-        int quitIndex = menuSize - 1;
+        int quitIndex = menuList.size() - 1;
         if (menuSelectionIndex == 0) {
             parentScreen.command(Command.SCAN_FOR_GAMES);
         } else if (menuSelectionIndex == quitIndex) {
@@ -234,7 +216,7 @@ public class MainMenuPanel extends Panel {
     }
 
     public Platform getChosenPlatform() {
-        return Platform.SEGA_GENESIS;
+        return Platform.valueOf(menuList.get(menuSelectionIndex).getKey());
     }
 
     private void menuGoBack() {
@@ -243,12 +225,28 @@ public class MainMenuPanel extends Panel {
 
     private void menuRight() {
         Logger.getLogger(this.getClass()).info("MENU RIGHT " + menuSelectionIndex);
-        int quitIndex = menuSize - 1;
+        int quitIndex = menuList.size() - 1;
         if (menuSelectionIndex == 0) {
         } else if (menuSelectionIndex == quitIndex) {
         } else {
             parentScreen.command(Command.GAMEPANEL_FOCUS);
         }
 
+    }
+
+    private void updateGamePanel() {
+        int quitIndex = menuList.size() - 1;
+        if (menuSelectionIndex == 0) {
+        } else if (menuSelectionIndex == quitIndex) {
+        } else {
+            parentScreen.command(Command.GAMEPANEL_UPDATE);
+        }
+    }
+
+    /**
+     * @param tgmResource the tgmResource to set
+     */
+    public void setTgmResource(TgmResource tgmResource) {
+        this.tgmResource = tgmResource;
     }
 }

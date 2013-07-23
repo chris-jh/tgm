@@ -5,6 +5,7 @@
 package com.tgm.data.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,6 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
 import javax.persistence.Version;
 
 /**
@@ -29,7 +31,10 @@ import javax.persistence.Version;
 @NamedQueries({
     @NamedQuery(name = "GameEntity.findByName", query = "SELECT a FROM GameEntity a WHERE a.name = :name"),
     @NamedQuery(name = "GameEntity.findByNameAndPlatform", query = "SELECT a FROM GameEntity a WHERE a.name = :name AND a.platformRef = :platform"),
-    @NamedQuery(name = "GameEntity.findGamesByPlatform", query = "SELECT a FROM GameEntity a WHERE a.platformRef = :platform")
+    @NamedQuery(name = "GameEntity.findGamesByPlatform", query = "SELECT a FROM GameEntity a WHERE a.platformRef = :platform"),
+    @NamedQuery(name = "GameEntity.findRecentlyAddedGamesByPlatform", query = "SELECT a FROM GameEntity a WHERE a.platformRef = :platform ORDER BY a.dateAdded DESC"),
+    @NamedQuery(name = "GameEntity.findRecentlyPlayedGamesByPlatform", query = "SELECT a FROM GameEntity a WHERE a.platformRef = :platform ORDER BY a.dateLastPlayed DESC")
+
 })
 public class GameEntity implements EntityInterface, Serializable {
 
@@ -43,6 +48,8 @@ public class GameEntity implements EntityInterface, Serializable {
     private Integer version;
     @Column(name = "name", nullable = false)
     private String name;
+    @Column(name = "file_name", nullable = false)
+    private String fileName;
     @Column(name = "game_path", nullable = false)
     private String gamePath;
     @JoinColumn(name = "platform_ref", referencedColumnName = "id")
@@ -58,6 +65,16 @@ public class GameEntity implements EntityInterface, Serializable {
     private String imageScreenShotPath;
     @Column(name = "image_art_path", nullable = true)
     private String imageArtPath;
+    @Column(name = "date_added", nullable = true)
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    private Date dateAdded;
+    @Column(name = "date_last_played", nullable = true)
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    private Date dateLastPlayed;
+    @Column(name = "play_count", nullable = true)
+    private Integer playCount;
+    @Column(name = "rating", nullable = true)
+    private Integer rating;
 
     /**
      * @return the id
@@ -87,6 +104,7 @@ public class GameEntity implements EntityInterface, Serializable {
         this.name = name;
     }
 
+    @Override
     public String getTable() {
         return table;
     }
@@ -105,7 +123,6 @@ public class GameEntity implements EntityInterface, Serializable {
         this.version = version;
     }
 
-    
     /**
      * @return the platformRef
      */
@@ -120,6 +137,7 @@ public class GameEntity implements EntityInterface, Serializable {
         this.platformRef = platformRef;
     }
 
+    @Override
     public void fetch() {
         this.getPlatformRef().getId();
     }
@@ -206,5 +224,75 @@ public class GameEntity implements EntityInterface, Serializable {
      */
     public void setGamePath(String gamePath) {
         this.gamePath = gamePath;
+    }
+
+    /**
+     * @return the dateAdded
+     */
+    public Date getDateAdded() {
+        return dateAdded;
+    }
+
+    /**
+     * @param dateAdded the dateAdded to set
+     */
+    public void setDateAdded(Date dateAdded) {
+        this.dateAdded = dateAdded;
+    }
+
+    /**
+     * @return the dateLastPlayed
+     */
+    public Date getDateLastPlayed() {
+        return dateLastPlayed;
+    }
+
+    /**
+     * @param dateLastPlayed the dateLastPlayed to set
+     */
+    public void setDateLastPlayed(Date dateLastPlayed) {
+        this.dateLastPlayed = dateLastPlayed;
+    }
+
+    /**
+     * @return the playCount
+     */
+    public Integer getPlayCount() {
+        return playCount;
+    }
+
+    /**
+     * @param playCount the playCount to set
+     */
+    public void setPlayCount(Integer playCount) {
+        this.playCount = playCount;
+    }
+
+    /**
+     * @return the rating
+     */
+    public Integer getRating() {
+        return rating;
+    }
+
+    /**
+     * @param rating the rating to set
+     */
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+
+    /**
+     * @return the fileName
+     */
+    public String getFileName() {
+        return fileName;
+    }
+
+    /**
+     * @param fileName the fileName to set
+     */
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

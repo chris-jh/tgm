@@ -11,6 +11,7 @@ import com.tgm.gui.enums.Screen;
 import com.tgm.gui.panels.GamesLibraryPanel;
 import com.tgm.gui.panels.MainMenuPanel;
 import com.tgm.interfaces.ScannerInterface;
+import com.tgm.resources.TgmResource;
 import org.apache.log4j.Logger;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -28,6 +29,8 @@ public class MainScreen extends AbstractScreen {
     private ScannerInterface scanner;
     private Panel mainPanel;
     private GamesLibraryPanel gamesPanel;
+    @Autowired
+    private TgmResource tgmResource;
 
     {
         screenName = "Main Screen";
@@ -35,7 +38,7 @@ public class MainScreen extends AbstractScreen {
 
     @Override
     public void configure() {
-        menu = new MainMenuPanel();
+        menu = tgmResource.createComponentInstance(MainMenuPanel.class);
         menu.setAppInterface(appInterface);
         menu.setParentScreen(this);
         menu.setSize(appInterface.getWidth() / 3.69f, appInterface.getHeight());
@@ -50,7 +53,8 @@ public class MainScreen extends AbstractScreen {
         float panelWidth = mainPanel.getWidth() - panelX;
         float panelHeight = mainPanel.getHeight();
 
-        gamesPanel = (GamesLibraryPanel) mainPanel.add(new GamesLibraryPanel("gamesPanel", panelX, 0, panelWidth, panelHeight));
+
+        gamesPanel = (GamesLibraryPanel) mainPanel.add(tgmResource.createComponentInstance(GamesLibraryPanel.class, "gamesPanel", panelX, 0, panelWidth, panelHeight));
 
         mainPanel.add(menu);
 
@@ -98,17 +102,18 @@ public class MainScreen extends AbstractScreen {
                 break;
             }
             case GAMEPANEL_UPDATE: {
+                gamePanelUpdate();
                 break;
             }
-            case MENU_FOCUS:{
+            case MENU_FOCUS: {
                 menuFocus();
                 break;
             }
-            case PLATFORM_MENU:{
+            case PLATFORM_MENU: {
                 platformMenu();
                 break;
             }
-            case GO_BACK:{
+            case GO_BACK: {
                 Boot.exit(0);
                 break;
             }
@@ -122,8 +127,12 @@ public class MainScreen extends AbstractScreen {
 
     private void gamePanelFocus() {
         Logger.getLogger(this.getClass()).info("GAME PANEL FOCUSED");
-        menu.setFocused(false);
-        gamesPanel.setFocused(true);
+        if (gamesPanel.hasGames()) {
+            menu.setFocused(false);
+            gamesPanel.setFocused(true);
+        } else {
+            menuFocus();
+        }
     }
 
     private void menuFocus() {
@@ -132,10 +141,21 @@ public class MainScreen extends AbstractScreen {
         gamesPanel.setFocused(false);
 
     }
-    
-    private void platformMenu(){
-        PlatformScreen p = (PlatformScreen)appInterface.getScreenInterface(Screen.PLATFORM);
+
+    private void platformMenu() {
+        PlatformScreen p = (PlatformScreen) appInterface.getScreenInterface(Screen.PLATFORM);
         p.setPlatform(menu.getChosenPlatform());
         appInterface.processNextScreen(Screen.PLATFORM);
+    }
+
+    private void gamePanelUpdate() {
+        gamesPanel.updateLibrary(menu.getChosenPlatform());
+    }
+
+    /**
+     * @param tgmResource the tgmResource to set
+     */
+    public void setTgmResource(TgmResource tgmResource) {
+        this.tgmResource = tgmResource;
     }
 }

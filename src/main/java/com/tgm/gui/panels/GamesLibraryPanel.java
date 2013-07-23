@@ -4,6 +4,11 @@
  */
 package com.tgm.gui.panels;
 
+import com.tgm.data.entity.GameEntity;
+import com.tgm.data.entity.PlatformEntity;
+import com.tgm.data.interfaces.GameDaoInterface;
+import com.tgm.data.interfaces.PlatformDaoInterface;
+import com.tgm.enums.Platform;
 import com.tgm.gui.components.Image;
 import com.tgm.gui.components.Panel;
 import com.tgm.gui.components.SolidBackground;
@@ -16,6 +21,7 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -33,17 +39,19 @@ public class GamesLibraryPanel extends Panel {
     private long artTimer = 0;
     private long artTime = 15000;
     private int artSelected = 0;
-    private int artMax = 4;
+    @Autowired
+    private PlatformDaoInterface platformDao;
+    @Autowired
+    private GameDaoInterface gameDao;
+    private PlatformEntity platformEntity;
+    private List<GameEntity> recentlyPlayedGameEntities;
+    private List<GameEntity> recentlyAddedGameEntities;
+
+    public GamesLibraryPanel() {
+    }
 
     public GamesLibraryPanel(String id, float x, float y, float width, float height) {
         super(id, x, y, width, height);
-        //
-
-        artList.add("images/test/artTest1.jpg");
-        artList.add("images/test/artTest2.jpg");
-        artList.add("images/test/artTest3.jpg");
-        artList.add("images/test/artTest4.jpg");
-        artList.add("images/test/artTest5.jpg");
     }
 
     @Override
@@ -79,7 +87,7 @@ public class GamesLibraryPanel extends Panel {
             if (gc.getInput().isKeyPressed(Input.KEY_RIGHT)) {
                 gameRight();
             }
-            if (gc.getInput().isKeyPressed(Input.KEY_ESCAPE)){
+            if (gc.getInput().isKeyPressed(Input.KEY_ESCAPE)) {
                 parentScreen.command(Command.MENU_FOCUS);
             }
             gc.getInput().clearKeyPressedRecord();
@@ -100,11 +108,11 @@ public class GamesLibraryPanel extends Panel {
 
         panelY = ((this.getHeight() - panelHeight) - panelYMargin) / 3f;
 
-        artImage = (Image) add(new Image("artImage", artList.get(0), 0 - this.getX(), 0 - this.getY(), this.getWidth() + this.getX(), this.getHeight() + this.getY()));
+        artImage = (Image) add(new Image("artImage", "", 0 - this.getX(), 0 - this.getY(), this.getWidth() + this.getX(), this.getHeight() + this.getY()));
         artImage.setFadeColor(new Color(255, 255, 255, 255));
         artImage.setFadeAlpha(0.0f);
 
-        libraryBackgroundImage = (SolidBackground) add(new SolidBackground("libraryBackgroundImage", new Color(255,255,255,170), panelX, panelY, panelWidth, panelHeight));
+        libraryBackgroundImage = (SolidBackground) add(new SolidBackground("libraryBackgroundImage", new Color(255, 255, 255, 170), panelX, panelY, panelWidth, panelHeight));
 
         recentlyPlayedPanel = (LibraryPanel) add(new LibraryPanel("recentlyPlayedPanel", "Recently Played", LibraryPanel.TOP, panelX, panelY, panelWidth, panelHeight));
         recentlyAddedPanel = (LibraryPanel) add(new LibraryPanel("recentlyAddedPanel", "Recently Added", LibraryPanel.TOP, panelX, panelY + recentlyPlayedPanel.getHeight(), panelWidth, panelHeight));
@@ -165,11 +173,66 @@ public class GamesLibraryPanel extends Panel {
     private void updateArt() {
         if (System.currentTimeMillis() > artTimer) {
             artTimer = System.currentTimeMillis() + artTime;
-            artSelected++;
-            if (artSelected > artMax - 1) {
-                artSelected = 0;
+            if (!artList.isEmpty()) {
+                artSelected++;
+                if (artSelected > artList.size() - 1) {
+                    artSelected = 0;
+                }
+                artImage.setPathAndFade(artList.get(artSelected));
             }
-            artImage.setPathAndFade(artList.get(artSelected));
         }
+    }
+
+    public boolean hasGames() {
+        return (recentlyAddedGameEntities != null) && (recentlyPlayedGameEntities != null);
+    }
+
+    public void clear() {
+        artList.clear();
+        recentlyPlayedPanel.clear();
+        recentlyAddedPanel.clear();
+    }
+
+    public void updateLibrary(Platform platform) {
+        clear();
+
+        try {
+            platformEntity = platformDao.findPlatformByName(platform);
+            recentlyAddedGameEntities = gameDao.findRecentlyAddedGamesByPlatform(platformEntity);
+            recentlyPlayedGameEntities = gameDao.findRecentlyPlayedGamesByPlatform(platformEntity);
+        } catch (Exception e) {
+            platformEntity = null;
+            recentlyAddedGameEntities = null;
+            recentlyPlayedGameEntities = null;
+            return;
+        }
+
+        Logger.getLogger(this.getClass()).info("Updating Library....");
+
+        recentlyAddedPanel.addGame(recentlyPlayedGameEntities);
+        recentlyPlayedPanel.addGame(recentlyPlayedGameEntities);
+
+        recentlyAddedPanel.update();
+        recentlyPlayedPanel.update();
+        
+        for (GameEntity gameEntity : recentlyPlayedGameEntities) {
+            artList.add(gameEntity.getImageArtPath());
+        }
+        artTimer = 0;
+
+    }
+
+    /**
+     * @param platformDao the platformDao to set
+     */
+    public void setPlatformDao(PlatformDaoInterface platformDao) {
+        this.platformDao = platformDao;
+    }
+
+    /**
+     * @param gameDao the gameDao to set
+     */
+    public void setGameDao(GameDaoInterface gameDao) {
+        this.gameDao = gameDao;
     }
 }

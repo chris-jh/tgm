@@ -23,6 +23,9 @@ public class ScreenUtils {
     
     public static String readMediaAsString(String media) {
         File f = new File(TgmResource.MEDIA + "/" + media);
+        if (!f.exists()){
+            f = new File(media);
+        }
         Logger.getLogger(ScreenUtils.class).info("LOAD RESOURCE: [" + TgmResource.MEDIA + "/" + media + "] = " + f.getAbsolutePath());
         return f.getAbsolutePath();
     }

@@ -10,11 +10,20 @@ import com.tgm.data.interfaces.PlatformDaoInterface;
 import com.tgm.data.entity.PlatformEntity;
 import com.tgm.data.entity.GameEntity;
 import com.tgm.data.interfaces.GameDaoInterface;
+import com.tgm.data.tgdb.Game;
+import com.tgm.data.tgdb.images.BoxArt;
+import com.tgm.data.tgdb.images.Images;
 import com.tgm.enums.Platform;
 import com.tgm.resources.Path;
+import com.tgm.resources.TgmResource;
+import com.tgm.scrapers.search.SearchResults;
+import com.tgm.scrapers.search.type.SearchType;
 import com.tgm.utils.GameUtils;
 import com.tgm.utils.MountUtils;
+import com.tgm.utils.OSUtils;
+import java.util.Date;
 import java.util.HashMap;
+import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +44,10 @@ public class PlatformScanner implements PlatformScannerInterface, DisposableBean
     private boolean scanning = false;
     private boolean processingScan = false;
     private final HashMap<Platform, PlatformConfig> platformConfigs = new HashMap<Platform, PlatformConfig>();
+    @Autowired(required = false)
+    private SearchType searchInterface;
+    @Autowired
+    private OSUtils osUtils;
 
     @Transactional
     @Override
@@ -118,9 +131,53 @@ public class PlatformScanner implements PlatformScannerInterface, DisposableBean
             }
 
             if (g == null) {
+                SearchResults r = null;
+                Game rs = null;
+                try {
+                    if (searchInterface != null) {
+                        r = searchInterface.search(name, platform.getName().toString());
+                        rs = r.getGames().get(0);
+                    }
+                } catch (Exception e) {
+                    rs = null;
+                }
+
+                int i = RandomUtils.nextInt(4) + 1;
                 g = gameDao.createInstance();
                 g.setGamePath(path);
-                g.setName(name);
+                g.setName(rs != null ? rs.getGameTitle() : name);
+                g.setFileName(name);
+                g.setDateAdded(new Date());
+                g.setDateLastPlayed(new Date(0));
+                g.setRating(i);
+
+
+                String boxImage = null;
+                String boxImagePath = null;
+                if (rs != null) {
+                    try {
+                        for (Images images : rs.getGameImages()) {
+                            for (BoxArt boxArt : images.getBoxArt()) {
+                                if (boxArt.getSide().equals("front")) {
+                                    boxImage = boxArt.getValue();
+                                }
+                            }
+                        }
+                        if (boxImage != null) {
+                            boxImagePath = osUtils.getAppHomePath() + "/art/tgdb/" + boxImage;
+                            TgmResource.saveImage(searchInterface.getArtUrl() + "/" + boxImage, boxImagePath);
+                        }
+                    } catch (Exception e) {
+                        boxImagePath =null;
+                    }
+                }
+
+                g.setImageBoxArtPath(boxImagePath != null ? boxImagePath : "images/test/gameTest" + i + ".jpg");
+                g.setImageArtPath("images/test/artTest" + i + ".jpg");
+                g.setImageScreenShotPath("images/test/artTest" + i + ".jpg");
+                g.setOverviewText(rs != null ? rs.getOverview() : "Some Random Text " + i);
+                g.setPlayCount(i);
+                g.setExternalId(rs != null ? rs.getId() : (long) i);
                 g.setPlatformRef(platform);
                 g = gameDao.saveOrUpdate(g);
                 Logger.getLogger(this.getClass()).info("SAVED GAME: " + g.toString() + " " + g.getName() + " " + g.getId());
@@ -191,5 +248,12 @@ public class PlatformScanner implements PlatformScannerInterface, DisposableBean
     @Override
     public boolean isScanning() {
         return scanning;
+    }
+
+    /**
+     * @param osUtils the osUtils to set
+     */
+    public void setOsUtils(OSUtils osUtils) {
+        this.osUtils = osUtils;
     }
 }

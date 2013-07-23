@@ -15,6 +15,7 @@ import org.newdawn.slick.SlickException;
 public interface ComponentInterface {
 
     public String getId();
+    public void setId(String id);
 
     public float getX();
 
