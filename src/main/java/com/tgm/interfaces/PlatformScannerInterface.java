@@ -9,9 +9,6 @@ import com.tgm.data.entity.GameEntity;
 import com.tgm.data.entity.PlatformEntity;
 import com.tgm.enums.Platform;
 import com.tgm.resources.Path;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *

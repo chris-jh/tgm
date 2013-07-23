@@ -30,23 +30,23 @@ public class Game implements GameDetailsInterface {
     @XmlElement(name = "GameTitle")
     private String gameTitle;
     @XmlElement(name = "ReleaseDate")
-    private String releaseDate;
+    private String releaseDate = "";
     @XmlElement(name = "PlatformId")
     private String platformId;
     @XmlElement(name = "Platform")
-    private String platform;
+    private String platform = "";
     @XmlElement(name = "Overview")
-    private String overview;
+    private String overview = "";
     @XmlElement(name = "Rating")
-    private String rating;
+    private String rating = "0";
     @XmlElement(name = "Publisher")
-    private String publisher;
+    private String publisher  = "";
     @XmlElement(name = "Developer")
-    private String developer;
+    private String developer = "";
     @XmlElement(name = "Players")
-    private String players;
+    private String players = "1";
     @XmlElement(name = "Co-op")
-    private String coOp;
+    private String coOp = "No";
     @XmlElement(name = "Images")
     private List<Images> gameImages;
 
@@ -156,68 +156,81 @@ public class Game implements GameDetailsInterface {
 
     @Override
     public String getBoxArt() {
-        if (!getGameImages().isEmpty()) {
-            for (Images images : gameImages) {
-                for (BoxArt image : images.getBoxArt()) {
-                    if (image.getSide().equals("front")) {
-                        return image.getValue();
+        try {
+            if (!getGameImages().isEmpty()) {
+                for (Images images : gameImages) {
+                    for (BoxArt image : images.getBoxArt()) {
+                        if (image.getSide().equals("front")) {
+                            return image.getValue();
+                        }
                     }
                 }
             }
+        } catch (Exception e) {
         }
-        return "blankbox.png";
+        return null;
     }
 
     @Override
     public String getFanArt() {
-        if (!getGameImages().isEmpty()) {
-            for (Images images : gameImages) {
-                for (FanArt image : images.getFanArt()) {
-                    return image.getOriginal();
+        try {
+            if (!getGameImages().isEmpty()) {
+                for (Images images : gameImages) {
+                    for (FanArt image : images.getFanArt()) {
+                        return image.getOriginal();
+                    }
                 }
             }
+        } catch (Exception e) {
         }
-        return "blankart.png";
+        return null;
     }
 
     @Override
     public String getScreenShot() {
-        if (!getGameImages().isEmpty()) {
-            for (Images images : gameImages) {
-                for (Screenshot image : images.getScreenshot()) {
-                    return image.getOriginal();
+        try {
+            if (!getGameImages().isEmpty()) {
+                for (Images images : gameImages) {
+                    for (Screenshot image : images.getScreenshot()) {
+                        return image.getOriginal();
+                    }
                 }
             }
+        } catch (Exception e) {
         }
-        return "blankscreenshot.png";
-    }
-    
-    @Override
-    public String getBanner() {
-        if (!getGameImages().isEmpty()) {
-            for (Images images : gameImages) {
-                for (Banner image : images.getBanner()) {
-                    return image.getValue();
-                }
-            }
-        }
-        return "blankbanner.png";
-    }
-    
-    @Override
-    public String getClearLogo() {
-        if (!getGameImages().isEmpty()) {
-            for (Images images : gameImages) {
-                for (ClearLogo image : images.getClearLogo()) {
-                    return image.getValue();
-                }
-            }
-        }
-        return "blanklogo.png";
+        return null;
     }
 
-        
-    
+    @Override
+    public String getBanner() {
+        try {
+            if (!getGameImages().isEmpty()) {
+                for (Images images : gameImages) {
+                    for (Banner image : images.getBanner()) {
+                        return image.getValue();
+                    }
+                }
+            }
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    @Override
+    public String getClearLogo() {
+        try {
+            if (!getGameImages().isEmpty()) {
+                for (Images images : gameImages) {
+                    for (ClearLogo image : images.getClearLogo()) {
+                        return image.getValue();
+                    }
+                }
+            }
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
     /**
      * @return the rating
      */

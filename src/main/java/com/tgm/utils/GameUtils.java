@@ -21,6 +21,8 @@ import org.springframework.scheduling.annotation.Async;
 public class GameUtils {
 
     private static int counter = 0;
+    private static int counterMax = 30;
+
     
     @Async
     public static void processGameFiles(PlatformScannerInterface scanner, Platform platform, String mountedPath, final String[] filterExt, boolean mounted) throws Exception {
@@ -52,7 +54,7 @@ public class GameUtils {
             stream = Files.newDirectoryStream(dir, filter);
             for (Path file : stream) {
                 counter++;
-                if (counter > 10){
+                if (counter > counterMax){
                     return;
                 }    
                 if (!scanner.isScanning()){

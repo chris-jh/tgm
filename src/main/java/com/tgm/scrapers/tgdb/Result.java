@@ -35,6 +35,20 @@ public class Result implements ResultInterface<Game> {
         this.games = games;
     }
 
+    @Override
+    public Game getFirstGame() {
+        return games.get(0);
+    }
+
+    @Override
+    public boolean hasGame() {
+        try {
+            return !games.isEmpty();
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
     /**
      * @return the baseImgUrl
      */

@@ -119,7 +119,7 @@ public class GamePanel extends Panel {
     public void setGameEntity(GameEntity gameEntity) {
         this.gameEntity = gameEntity;
         if (this.gameEntity != null){
-            this.gameName = gameEntity.getName()+" ["+gameEntity.getFileName()+"]";
+            this.gameName = gameEntity.getName();
             this.gamePath = gameEntity.getImageBoxArtPath();
             update = true;
         }

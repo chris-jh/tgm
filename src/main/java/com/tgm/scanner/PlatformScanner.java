@@ -9,24 +9,25 @@ import com.tgm.config.PlatformConfig;
 import com.tgm.data.interfaces.PlatformDaoInterface;
 import com.tgm.data.entity.PlatformEntity;
 import com.tgm.data.entity.GameEntity;
+import com.tgm.data.entity.GamePathEntity;
 import com.tgm.data.interfaces.GameDaoInterface;
-import com.tgm.data.tgdb.Game;
-import com.tgm.data.tgdb.images.BoxArt;
-import com.tgm.data.tgdb.images.Images;
+import com.tgm.data.interfaces.GamePathDaoInterface;
 import com.tgm.enums.Platform;
 import com.tgm.resources.Path;
 import com.tgm.resources.TgmResource;
-import com.tgm.scrapers.search.SearchResults;
-import com.tgm.scrapers.search.type.SearchType;
+import com.tgm.scrapers.interfaces.GameDetailsInterface;
+import com.tgm.scrapers.interfaces.ResultInterface;
+import com.tgm.scrapers.interfaces.ScraperInterface;
 import com.tgm.utils.GameUtils;
 import com.tgm.utils.MountUtils;
 import com.tgm.utils.OSUtils;
 import java.util.Date;
 import java.util.HashMap;
-import org.apache.commons.lang.math.RandomUtils;
+import javax.persistence.NoResultException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -40,12 +41,13 @@ public class PlatformScanner implements PlatformScannerInterface, DisposableBean
     @Autowired
     private GameDaoInterface<GameEntity, Integer> gameDao;
     @Autowired
+    private GamePathDaoInterface<GamePathEntity, Integer> gamePathDao;
+    @Autowired
     private MountUtils mountUtils;
     private boolean scanning = false;
     private boolean processingScan = false;
-    private final HashMap<Platform, PlatformConfig> platformConfigs = new HashMap<Platform, PlatformConfig>();
     @Autowired(required = false)
-    private SearchType searchInterface;
+    private ScraperInterface scraperInterface;
     @Autowired
     private OSUtils osUtils;
 
@@ -119,74 +121,128 @@ public class PlatformScanner implements PlatformScannerInterface, DisposableBean
         return e;
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
     public GameEntity saveGame(PlatformEntity platform, String name, String path) throws Exception {
         GameEntity g = null;
+        GamePathEntity gP = null;
+
+        ResultInterface r = null;
+        GameDetailsInterface gameDetail = null;
+
+        String gameName = name;
+
+        String boxImage = null;
+        String artImage = null;
+        String screenImage = null;
+
+        String boxImagePath = null;
+        String artImagePath = null;
+        String screenImagePath = null;
+
+
         try {
             try {
-                g = gameDao.findByNameAndPlatform(name, platform);
+                gP = gamePathDao.findByFileName(name);
+            } catch (NoResultException e) {
+                gP = null;
+            }
+
+            if (gP != null) {
+                return gameDao.findById(gP.getGameRef().getId());
+            }
+
+            try {
+                if (scraperInterface != null) {
+                    r = scraperInterface.search(name, platform.getName().toString());
+                    if (r.hasGame()) {
+                        gameDetail = r.getFirstGame();
+                    }
+                }
             } catch (Exception e) {
+                Logger.getLogger(this.getClass()).fatal("SCRAPER ERROR: "+e);
+                gameDetail = null;
+            }
+
+            gameName = (gameDetail != null ? gameDetail.getGameTitle() : name);
+
+            try {
+                g = gameDao.findByNameAndPlatform(gameName, platform);
+            } catch (NoResultException e) {
                 g = null;
             }
 
             if (g == null) {
-                SearchResults r = null;
-                Game rs = null;
-                try {
-                    if (searchInterface != null) {
-                        r = searchInterface.search(name, platform.getName().toString());
-                        rs = r.getGames().get(0);
-                    }
-                } catch (Exception e) {
-                    rs = null;
-                }
-
-                int i = RandomUtils.nextInt(4) + 1;
                 g = gameDao.createInstance();
-                g.setGamePath(path);
-                g.setName(rs != null ? rs.getGameTitle() : name);
-                g.setFileName(name);
+                g.setName(gameDetail != null ? gameDetail.getGameTitle() : name);
                 g.setDateAdded(new Date());
                 g.setDateLastPlayed(new Date(0));
-                g.setRating(i);
+                g.setRating((int) Double.parseDouble(gameDetail != null ? gameDetail.getRating() : "0.0"));
 
+                if (gameDetail != null) {
+                    boxImage = gameDetail.getBoxArt();
+                    artImage = gameDetail.getFanArt();
 
-                String boxImage = null;
-                String boxImagePath = null;
-                if (rs != null) {
-                    try {
-                        for (Images images : rs.getGameImages()) {
-                            for (BoxArt boxArt : images.getBoxArt()) {
-                                if (boxArt.getSide().equals("front")) {
-                                    boxImage = boxArt.getValue();
-                                }
-                            }
+                    if (boxImage != null) {
+                        try {
+                            boxImagePath = osUtils.getAppHomePath() + "/boxart/tgdb/" + platform.getName().toString() + "/" + boxImage;
+                            TgmResource.saveImage(r.getBaseImgUrl() + "/" + boxImage, boxImagePath);
+                        } catch (Exception e) {
+                            boxImagePath = null;
                         }
-                        if (boxImage != null) {
-                            boxImagePath = osUtils.getAppHomePath() + "/art/tgdb/" + boxImage;
-                            TgmResource.saveImage(searchInterface.getArtUrl() + "/" + boxImage, boxImagePath);
-                        }
-                    } catch (Exception e) {
-                        boxImagePath =null;
                     }
+
+                    if (artImage != null) {
+                        try {
+                            artImagePath = osUtils.getAppHomePath() + "/fanart/tgdb/" + platform.getName().toString() + "/" + artImage;
+                            TgmResource.saveImage(r.getBaseImgUrl() + "/" + artImage, artImagePath);
+                        } catch (Exception e) {
+                            artImagePath = null;
+                        }
+                    }
+
+                    if (screenImage != null) {
+                        try {
+                            screenImagePath = osUtils.getAppHomePath() + "/fanart/tgdb/" + platform.getName().toString() + "/" + screenImage;
+                            TgmResource.saveImage(r.getBaseImgUrl() + "/" + screenImage, screenImagePath);
+                        } catch (Exception e) {
+                            screenImagePath = null;
+                        }
+                    }
+
                 }
 
-                g.setImageBoxArtPath(boxImagePath != null ? boxImagePath : "images/test/gameTest" + i + ".jpg");
-                g.setImageArtPath("images/test/artTest" + i + ".jpg");
-                g.setImageScreenShotPath("images/test/artTest" + i + ".jpg");
-                g.setOverviewText(rs != null ? rs.getOverview() : "Some Random Text " + i);
-                g.setPlayCount(i);
-                g.setExternalId(rs != null ? rs.getId() : (long) i);
+                g.setImageBoxArtPath(boxImagePath != null ? boxImagePath : "images/blankbox.png");
+                g.setImageArtPath(artImagePath != null ? artImagePath : "images/blankart.png");
+                g.setImageScreenShotPath(screenImagePath != null ? screenImagePath : "images/blankscreenshot.png");
+                g.setOverviewText(gameDetail != null ? gameDetail.getOverview() : "");
+                g.setPlayCount(0);
+                g.setExternalId(gameDetail != null ? gameDetail.getId() : (long) 0);
                 g.setPlatformRef(platform);
                 g = gameDao.saveOrUpdate(g);
-                Logger.getLogger(this.getClass()).info("SAVED GAME: " + g.toString() + " " + g.getName() + " " + g.getId());
-                return g;
-            } else {
-                return g;
+                Logger.getLogger(this.getClass()).info("SAVED NEW GAME: " + g.toString() + " " + g.getName() + " " + g.getId());
             }
+
+            gP = gamePathDao.createInstance();
+            gP.setGameRef(g);
+            gP.setFileName(name);
+            gP.setGamePath(path);
+            gP = gamePathDao.saveOrUpdate(gP);
+            Logger.getLogger(this.getClass()).info("SAVED NEW GAME PATH: " + g.toString() + " " + g.getName() + " " + g.getId() + " " + gP.getGamePath());
+            return g;
         } finally {
             g = null;
+            g = null;
+            gP = null;
+            r = null;
+            gameDetail = null;
+            gameName = null;
+            boxImage = null;
+            artImage = null;
+            screenImage = null;
+            boxImagePath = null;
+            artImagePath = null;
+            screenImagePath = null;
         }
     }
 
@@ -201,7 +257,10 @@ public class PlatformScanner implements PlatformScannerInterface, DisposableBean
         Logger.getLogger(this.getClass()).info("\n\n\nGame List...");
 
         for (GameEntity game : gameDao.findAllAndFetch()) {
-            Logger.getLogger(this.getClass()).info("   " + game.getPlatformRef().getName() + " - " + game.getName() + " [" + game.getGamePath() + "]");
+            Logger.getLogger(this.getClass()).info("   " + game.getPlatformRef().getName() + " - " + game.getName() + " [" + game.getDateAdded() + "]");
+            for (GamePathEntity gamePathEntity : game.getGamePathList()) {
+                Logger.getLogger(this.getClass()).info("       " + gamePathEntity.getFileName() + " - " + gamePathEntity.getGamePath());
+            }
             c++;
         }
         Logger.getLogger(this.getClass()).info("Game List...Done [" + c + "]");
@@ -255,5 +314,12 @@ public class PlatformScanner implements PlatformScannerInterface, DisposableBean
      */
     public void setOsUtils(OSUtils osUtils) {
         this.osUtils = osUtils;
+    }
+
+    /**
+     * @param gamePathDao the gamePathDao to set
+     */
+    public void setGamePathDao(GamePathDaoInterface<GamePathEntity, Integer> gamePathDao) {
+        this.gamePathDao = gamePathDao;
     }
 }

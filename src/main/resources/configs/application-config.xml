@@ -15,7 +15,7 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <bean class="com.tgm.scrapers.search.SearchTheGamesDBNet" />
+    <bean class="com.tgm.scrapers.tgdb.TheGamesDBScraper" />
     
     <bean class="com.tgm.config.PlatformConfig" p:platform="SEGA_MEGA_DRIVE" p:emulatorPath="/some/path/here" p:emulatorArgs="-f">
         <property name="gamePath">

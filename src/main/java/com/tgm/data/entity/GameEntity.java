@@ -6,6 +6,7 @@ package com.tgm.data.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Version;
@@ -34,7 +36,6 @@ import javax.persistence.Version;
     @NamedQuery(name = "GameEntity.findGamesByPlatform", query = "SELECT a FROM GameEntity a WHERE a.platformRef = :platform"),
     @NamedQuery(name = "GameEntity.findRecentlyAddedGamesByPlatform", query = "SELECT a FROM GameEntity a WHERE a.platformRef = :platform ORDER BY a.dateAdded DESC"),
     @NamedQuery(name = "GameEntity.findRecentlyPlayedGamesByPlatform", query = "SELECT a FROM GameEntity a WHERE a.platformRef = :platform ORDER BY a.dateLastPlayed DESC")
-
 })
 public class GameEntity implements EntityInterface, Serializable {
 
@@ -48,10 +49,6 @@ public class GameEntity implements EntityInterface, Serializable {
     private Integer version;
     @Column(name = "name", nullable = false)
     private String name;
-    @Column(name = "file_name", nullable = false)
-    private String fileName;
-    @Column(name = "game_path", nullable = false)
-    private String gamePath;
     @JoinColumn(name = "platform_ref", referencedColumnName = "id")
     @ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     private PlatformEntity platformRef;
@@ -75,6 +72,8 @@ public class GameEntity implements EntityInterface, Serializable {
     private Integer playCount;
     @Column(name = "rating", nullable = true)
     private Integer rating;
+    @OneToMany(mappedBy = "gameRef", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    private Set<GamePathEntity> gamePathList;
 
     /**
      * @return the id
@@ -213,20 +212,6 @@ public class GameEntity implements EntityInterface, Serializable {
     }
 
     /**
-     * @return the gamePath
-     */
-    public String getGamePath() {
-        return gamePath;
-    }
-
-    /**
-     * @param gamePath the gamePath to set
-     */
-    public void setGamePath(String gamePath) {
-        this.gamePath = gamePath;
-    }
-
-    /**
      * @return the dateAdded
      */
     public Date getDateAdded() {
@@ -283,16 +268,16 @@ public class GameEntity implements EntityInterface, Serializable {
     }
 
     /**
-     * @return the fileName
+     * @return the gamePathList
      */
-    public String getFileName() {
-        return fileName;
+    public Set<GamePathEntity> getGamePathList() {
+        return gamePathList;
     }
 
     /**
-     * @param fileName the fileName to set
+     * @param gamePathList the gamePathList to set
      */
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setGamePathList(Set<GamePathEntity> gamePathList) {
+        this.gamePathList = gamePathList;
     }
 }
