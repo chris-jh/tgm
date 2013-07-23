@@ -8,7 +8,6 @@ import com.tgm.data.entity.GameEntity;
 import com.tgm.data.entity.PlatformEntity;
 import java.util.List;
 import javax.persistence.NoResultException;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -21,4 +20,8 @@ public interface GameDaoInterface<E, I> extends DaoInterface<GameEntity, Integer
     public GameEntity findByNameAndPlatform(String name, PlatformEntity platform) throws NoResultException;
 
     public List<GameEntity> findGamesByPlaform(PlatformEntity platform) throws NoResultException;
+
+    public List<GameEntity> findRecentlyAddedGamesByPlatform(PlatformEntity platform) throws NoResultException;
+
+    public List<GameEntity> findRecentlyPlayedGamesByPlatform(PlatformEntity platform) throws NoResultException;
 }

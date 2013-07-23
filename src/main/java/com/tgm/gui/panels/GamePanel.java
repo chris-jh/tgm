@@ -4,6 +4,7 @@
  */
 package com.tgm.gui.panels;
 
+import com.tgm.data.entity.GameEntity;
 import com.tgm.gui.components.Image;
 import com.tgm.gui.components.Label;
 import com.tgm.gui.components.Panel;
@@ -27,6 +28,8 @@ public class GamePanel extends Panel {
     private String gameName;
     private Label titleLabel;
     private float ratio = 1.20f;
+    private GameEntity gameEntity;
+    private boolean update = false;
 
     public GamePanel(String id, String gameName, String gamePath, float x, float y, float width, float height) {
         super(id, x, y, width, height);
@@ -43,6 +46,9 @@ public class GamePanel extends Panel {
     @Override
     public void update(GameContainer gc, int i) throws SlickException {
         super.update(gc, i);
+        if (update){
+            gameImage.setPath(this.gamePath);
+        }
         gameBackgroundImage.setVisible(!selected);
         gameSelectBackgroundImage.setVisible(selected);
     }
@@ -91,5 +97,32 @@ public class GamePanel extends Panel {
      */
     public String getGameName() {
         return gameName;
+    }
+
+    /**
+     * @param gameName the gameName to set
+     */
+    public void setGameName(String gameName) {
+        this.gameName = gameName;
+    }
+
+    /**
+     * @return the gameEntity
+     */
+    public GameEntity getGameEntity() {
+        return gameEntity;
+    }
+
+    /**
+     * @param gameEntity the gameEntity to set
+     */
+    public void setGameEntity(GameEntity gameEntity) {
+        this.gameEntity = gameEntity;
+        if (this.gameEntity != null){
+            this.gameName = gameEntity.getName()+" ["+gameEntity.getFileName()+"]";
+            this.gamePath = gameEntity.getImageBoxArtPath();
+            update = true;
+        }
+        
     }
 }

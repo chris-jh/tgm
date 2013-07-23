@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
  */
 public abstract class SearchHTTPType implements SearchType {
 
-    private String urlString = "";
+    protected String urlString = "";
     
     private SearchResults performSearch(String searchString) {
         SearchResults searchResults;

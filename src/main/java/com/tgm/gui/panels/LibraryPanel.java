@@ -152,7 +152,7 @@ public class LibraryPanel extends Panel {
 
         add(new Image("barTitleBackground", barImg, 0, 0, normalWidth, titleHeight));
         add(new Label(title + "Label", title, textMarginLeft, textMarginTop, textWidth, textHeight, Label.RIGHT, "Arial", Font.BOLD, titleFontSize, textColour, true));
-        gameTitleLabel = (Label) add(new Label(title + "GameLabel", "Game Title Here", textMarginLeft, textMarginTop, textWidth, textHeight, Label.LEFT, "Arial", Font.BOLD, titleFontSize, textColour, true));
+        gameTitleLabel = (Label) add(new Label(title + "GameLabel", "", textMarginLeft, textMarginTop, textWidth, textHeight, Label.LEFT, "Arial", Font.BOLD, titleFontSize, textColour, true));
 
 
 
@@ -179,11 +179,20 @@ public class LibraryPanel extends Panel {
             addGamePanel(i, gameX, gameY, gameWidth, gameHeight);
             gameX += gameWidth;
         }
+    }
 
+    public void clear() {
+        gameList.clear();
+        for (Map.Entry<Integer, GamePanel> entry : gamePanelMap.entrySet()) {
+            entry.getValue().setVisible(false);
+        }
+        //gamePanelMap.clear();
     }
 
     private void addGamePanel(int i, float gx, float gy, float gw, float gh) {
-        gamePanelMap.put(i, (GamePanel) add(new GamePanel("game" + i, "Game 1000000" + i, "images/test/gameTest" + (i + 1) + ".jpg", gx, gy, gw, gh)));
+        //gamePanelMap.put(i, (GamePanel) add(new GamePanel("game" + i, "Game 1000000" + i, "images/test/gameTest" + (i + 1) + ".jpg", gx, gy, gw, gh)));
+        gamePanelMap.put(i, (GamePanel) add(new GamePanel("game" + i, "", "", gx, gy, gw, gh)));
+        gamePanelMap.get(i).setVisible(false);
     }
 
     public void addGame(GameEntity gameEntity) {
@@ -192,6 +201,14 @@ public class LibraryPanel extends Panel {
 
     public void addGame(Collection<GameEntity> gameEntityCollection) {
         gameList.addAll(gameEntityCollection);
+    }
+    
+    public void update(){
+        for (int i = 0; i < gameList.size(); i++) {
+            Logger.getLogger(this.getClass()).info(gameList.get(i).getName()+" - "+gameList.get(i).getImageBoxArtPath());
+            gamePanelMap.get(i).setGameEntity(gameList.get(i));
+            gamePanelMap.get(i).setVisible(true);
+        }
     }
 
     /**

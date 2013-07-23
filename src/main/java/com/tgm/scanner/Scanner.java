@@ -8,7 +8,7 @@ import com.tgm.interfaces.ScannerInterface;
 import com.tgm.interfaces.PlatformScannerInterface;
 import com.tgm.config.PlatformConfig;
 import com.tgm.enums.Platform;
-import java.util.HashMap;
+import com.tgm.resources.TgmResource;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -16,7 +16,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.util.Assert;
 
 /**
  *
@@ -25,13 +24,13 @@ import org.springframework.util.Assert;
 public class Scanner implements ScannerInterface {
 
     private boolean scanning = false;
-    private final HashMap<Platform, PlatformConfig> platformConfigs = new HashMap<Platform, PlatformConfig>();
     private Lock scanLock = new ReentrantLock(true);
-    private final String assertMessage = "An PlatformConfig already contains platform ";
     @Autowired
     private ApplicationContext context;
     @Autowired
     private PlatformScannerInterface platformScannerInterface;
+    @Autowired
+    private TgmResource tgmResource;
 
     @Async
     @Override
@@ -43,12 +42,10 @@ public class Scanner implements ScannerInterface {
                 Logger.getLogger(this.getClass()).info("Scanner Initialised...1");
 
                 try {
-                    findAllPlatformConfigs();
-
                     platformScannerInterface.showList();
 
 
-                    for (Map.Entry<Platform, PlatformConfig> entry : platformConfigs.entrySet()) {
+                    for (Map.Entry<Platform, PlatformConfig> entry : tgmResource.getPlatformConfigs().entrySet()) {
 
                         scanning = platformScannerInterface.scanPlatform(entry.getValue());
 
@@ -73,16 +70,7 @@ public class Scanner implements ScannerInterface {
 
     }
 
-    private void findAllPlatformConfigs() {
-        Logger.getLogger(this.getClass()).info("Find All Platform Configs......");
-
-        for (Map.Entry<String, PlatformConfig> entry : context.getBeansOfType(PlatformConfig.class).entrySet()) {
-            Assert.isTrue((!platformConfigs.containsKey(entry.getValue().getPlatform())), assertMessage + entry.getValue().getPlatform());
-            platformConfigs.put(entry.getValue().getPlatform(), entry.getValue());
-        }
-        Logger.getLogger(this.getClass()).info("Find All Platform Configs......Done");
-
-    }
+    
 
     /**
      * @param platformScannerInterface the platformScannerInterface to set
@@ -96,5 +84,12 @@ public class Scanner implements ScannerInterface {
      */
     public void setContext(ApplicationContext context) {
         this.context = context;
+    }
+
+    /**
+     * @param tgmResource the tgmResource to set
+     */
+    public void setTgmResource(TgmResource tgmResource) {
+        this.tgmResource = tgmResource;
     }
 }

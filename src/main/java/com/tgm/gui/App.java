@@ -6,6 +6,7 @@ import com.tgm.gui.interfaces.ScreenInterface;
 import com.tgm.gui.lib.Engine;
 import com.tgm.gui.screens.MainScreen;
 import com.tgm.gui.screens.PlatformScreen;
+import com.tgm.resources.TgmResource;
 import com.tgm.scanner.PlatformScanner;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,8 +40,10 @@ public class App implements AppInterface, Runnable {
     AppGameContainer appGameContainer;
     Engine engine;
     ScreenInterface screen = null;
+    //@Autowired
+    //private ApplicationContext applicationContext;
     @Autowired
-    private ApplicationContext applicationContext;
+    private TgmResource tgmResource;
 
     public App() {
     }
@@ -100,8 +103,8 @@ public class App implements AppInterface, Runnable {
      */
     private void initScreens() {
         Logger.getLogger(this.getClass()).info("APP INIT SCREENS");
-        screens.put(Screen.MAIN, applicationContext.getAutowireCapableBeanFactory().createBean(MainScreen.class));
-        screens.put(Screen.PLATFORM, applicationContext.getAutowireCapableBeanFactory().createBean(PlatformScreen.class));
+        screens.put(Screen.MAIN, tgmResource.createScreenInstance(MainScreen.class));
+        screens.put(Screen.PLATFORM, tgmResource.createScreenInstance(PlatformScreen.class));
 
         try {
             for (Map.Entry<Screen, ScreenInterface> entry : screens.entrySet()) {
@@ -235,9 +238,9 @@ public class App implements AppInterface, Runnable {
     }
 
     /**
-     * @param applicationContext the applicationContext to set
+     * @param tgmResource the tgmResource to set
      */
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    public void setTgmResource(TgmResource tgmResource) {
+        this.tgmResource = tgmResource;
     }
 }

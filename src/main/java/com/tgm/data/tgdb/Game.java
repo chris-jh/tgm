@@ -4,7 +4,10 @@
  */
 package com.tgm.data.tgdb;
 
+import com.tgm.data.tgdb.images.Images;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -13,6 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author christopher
  */
 @XmlRootElement(name = "Game")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Game {
 
     @XmlElement(name = "id")
@@ -29,7 +33,7 @@ public class Game {
     private String overview;
     
     @XmlElement(name = "Images")
-    private List gameImages;
+    private List<Images> gameImages;
     
     
 
@@ -87,5 +91,47 @@ public class Game {
      */
     public void setPlatform(String platform) {
         this.platform = platform;
+    }
+
+    /**
+     * @return the platformId
+     */
+    public String getPlatformId() {
+        return platformId;
+    }
+
+    /**
+     * @param platformId the platformId to set
+     */
+    public void setPlatformId(String platformId) {
+        this.platformId = platformId;
+    }
+
+    /**
+     * @return the overview
+     */
+    public String getOverview() {
+        return overview;
+    }
+
+    /**
+     * @param overview the overview to set
+     */
+    public void setOverview(String overview) {
+        this.overview = overview;
+    }
+
+    /**
+     * @return the gameImages
+     */
+    public List<Images> getGameImages() {
+        return gameImages;
+    }
+
+    /**
+     * @param gameImages the gameImages to set
+     */
+    public void setGameImages(List<Images> gameImages) {
+        this.gameImages = gameImages;
     }
 }
