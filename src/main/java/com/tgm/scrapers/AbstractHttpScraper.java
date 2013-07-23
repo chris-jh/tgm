@@ -6,7 +6,7 @@ package com.tgm.scrapers;
 
 import com.tgm.data.entity.EntityInterface;
 import com.tgm.scrapers.interfaces.ResultInterface;
-import com.tgm.scrapers.interfaces.ScrapperInterface;
+import com.tgm.scrapers.interfaces.ScraperInterface;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -24,13 +24,13 @@ import org.springframework.util.Assert;
  *
  * @author christopher
  */
-public abstract class AbstractHttpScrapper<E extends ResultInterface> implements ScrapperInterface<E> {
+public abstract class AbstractHttpScraper<E extends ResultInterface> implements ScraperInterface<E> {
 
     private Class<E> resultClass;
     @Autowired(required = false)
     protected ApplicationContext context;
 
-    public AbstractHttpScrapper(Class<E> resultClass) {
+    public AbstractHttpScraper(Class<E> resultClass) {
         Assert.isAssignable(ResultInterface.class, resultClass);
         this.resultClass = resultClass;
     }
@@ -64,13 +64,13 @@ public abstract class AbstractHttpScrapper<E extends ResultInterface> implements
             Logger.getLogger(this.getClass()).info(results);
             return results;
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AbstractHttpScrapper.class.getName()).log(Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AbstractHttpScraper.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AbstractHttpScrapper.class.getName()).log(Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AbstractHttpScraper.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AbstractHttpScrapper.class.getName()).log(Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AbstractHttpScraper.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         } finally {
             results = null;

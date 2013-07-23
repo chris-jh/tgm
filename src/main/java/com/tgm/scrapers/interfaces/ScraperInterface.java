@@ -8,7 +8,7 @@ package com.tgm.scrapers.interfaces;
  *
  * @author christopher
  */
-public interface ScrapperInterface<E extends ResultInterface> {
+public interface ScraperInterface<E extends ResultInterface> {
 
     public ResultInterface search(String game, String platform);
 
