@@ -21,7 +21,7 @@ public class Images {
     @XmlElement(name = "boxart")
     private List<BoxArt> boxArt;
     @XmlElement(name = "fanart")
-    private List<String> fanArt;
+    private List<FanArt> fanArt;
 
     /**
      * @return the boxArt
@@ -40,14 +40,14 @@ public class Images {
     /**
      * @return the fanArt
      */
-    public List<String> getFanArt() {
+    public List<FanArt> getFanArt() {
         return fanArt;
     }
 
     /**
      * @param fanArt the fanArt to set
      */
-    public void setFanArt(List<String> fanArt) {
+    public void setFanArt(List<FanArt> fanArt) {
         this.fanArt = fanArt;
     }
 
