@@ -5,7 +5,6 @@
 package com.tgm.utils;
 
 import com.tgm.enums.Platform;
-import com.tgm.scanner.PlatformScanner;
 import com.tgm.interfaces.PlatformScannerInterface;
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +22,6 @@ public class GameUtils {
     private static int counter = 0;
     private static int counterMax = 30;
 
-    
     @Async
     public static void processGameFiles(PlatformScannerInterface scanner, Platform platform, String mountedPath, final String[] filterExt, boolean mounted) throws Exception {
         DirectoryStream<java.nio.file.Path> stream = null;
@@ -34,6 +32,7 @@ public class GameUtils {
         try {
             f = new File(mountedPath);
             filter = new DirectoryStream.Filter<Path>() {
+                @Override
                 public boolean accept(Path file) throws IOException {
                     boolean a = false;
                     for (String ext : filterExt) {
@@ -54,10 +53,10 @@ public class GameUtils {
             stream = Files.newDirectoryStream(dir, filter);
             for (Path file : stream) {
                 counter++;
-                if (counter > counterMax){
+                if (counter > counterMax) {
                     return;
-                }    
-                if (!scanner.isScanning()){
+                }
+                if (!scanner.isScanning()) {
                     return;
                 }
                 if (file.toFile().isDirectory()) {
@@ -69,7 +68,7 @@ public class GameUtils {
                     } else {
                         ff = file.toString();
                     }
-                    
+
                     scanner.processGame(platform, file.getFileName().toString(), ff);
                 }
                 try {
